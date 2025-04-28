@@ -55,6 +55,7 @@ import "./CommandPalette.scss";
 
 const lastUsedPaletteItem = atom<CommandPaletteItem | null>(null);
 
+// 定义命令面板的默认分类
 export const DEFAULT_CATEGORIES = {
   app: "App",
   export: "Export",
@@ -64,6 +65,7 @@ export const DEFAULT_CATEGORIES = {
   links: "Links",
 };
 
+// 获取分类的显示顺序
 const getCategoryOrder = (category: string) => {
   switch (category) {
     case DEFAULT_CATEGORIES.app:
@@ -83,6 +85,7 @@ const getCategoryOrder = (category: string) => {
   }
 };
 
+// 显示命令快捷键提示的组件
 const CommandShortcutHint = ({
   shortcut,
   className,
@@ -108,6 +111,7 @@ const CommandShortcutHint = ({
   );
 };
 
+// 判断是否为打开/关闭命令面板的快捷键
 const isCommandPaletteToggleShortcut = (event: KeyboardEvent) => {
   return (
     !event.altKey &&
@@ -121,6 +125,7 @@ type CommandPaletteProps = {
   customCommandPaletteItems?: CommandPaletteItem[];
 };
 
+// 命令面板主组件
 export const CommandPalette = Object.assign(
   (props: CommandPaletteProps) => {
     const uiAppState = useUIAppState();
@@ -167,6 +172,7 @@ export const CommandPalette = Object.assign(
   },
 );
 
+// 命令面板内部实现
 function CommandPaletteInner({
   customCommandPaletteItems,
 }: CommandPaletteProps) {
@@ -177,11 +183,13 @@ function CommandPaletteInner({
   const actionManager = useExcalidrawActionManager();
 
   const [lastUsed, setLastUsed] = useAtom(lastUsedPaletteItem);
-  const [allCommands, setAllCommands] = useState<
+  // 存储所有可用命令的状态
+const [allCommands, setAllCommands] = useState<
     MarkRequired<CommandPaletteItem, "haystack" | "order">[] | null
   >(null);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  // 命令搜索输入框的引用
+const inputRef = useRef<HTMLInputElement>(null);
 
   const stableDeps = useStable({
     uiAppState,
@@ -562,10 +570,13 @@ function CommandPaletteInner({
     setAppState,
   ]);
 
-  const [commandSearch, setCommandSearch] = useState("");
-  const [currentCommand, setCurrentCommand] =
+  // 当前搜索命令的状态
+const [commandSearch, setCommandSearch] = useState("");
+  // 当前选中命令的状态
+const [currentCommand, setCurrentCommand] =
     useState<CommandPaletteItem | null>(null);
-  const [commandsByCategory, setCommandsByCategory] = useState<
+  // 按分类组织的命令列表
+const [commandsByCategory, setCommandsByCategory] = useState<
     Record<string, CommandPaletteItem[]>
   >({});
 
@@ -579,7 +590,8 @@ function CommandPaletteInner({
     setCommandSearch("");
   };
 
-  const executeCommand = (
+  // 执行选中的命令
+const executeCommand = (
     command: CommandPaletteItem,
     event: React.MouseEvent | React.KeyboardEvent | KeyboardEvent,
   ) => {
@@ -598,7 +610,8 @@ function CommandPaletteInner({
     }
   };
 
-  const isCommandAvailable = useStableCallback(
+  // 检查命令是否可用
+const isCommandAvailable = useStableCallback(
     (command: CommandPaletteItem) => {
       if (command.viewMode === false && uiAppState.viewModeEnabled) {
         return false;
@@ -615,7 +628,8 @@ function CommandPaletteInner({
     },
   );
 
-  const handleKeyDown = useStableCallback((event: KeyboardEvent) => {
+  // 处理键盘事件，实现命令导航
+const handleKeyDown = useStableCallback((event: KeyboardEvent) => {
     const ignoreAlphanumerics =
       isWritableElement(event.target) ||
       isCommandPaletteToggleShortcut(event) ||

@@ -9,6 +9,11 @@ import { blobToArrayBuffer } from "./blob";
 // PNG
 // -----------------------------------------------------------------------------
 
+/**
+ * 从PNG文件中提取tEXt元数据块
+ * @param blob - PNG文件的Blob对象
+ * @returns 包含关键字和文本的对象，如果未找到返回null
+ */
 export const getTEXtChunk = async (
   blob: Blob,
 ): Promise<{ keyword: string; text: string } | null> => {
@@ -20,6 +25,12 @@ export const getTEXtChunk = async (
   return null;
 };
 
+/**
+ * 将元数据编码到PNG文件中
+ * @param blob - 原始PNG文件的Blob对象
+ * @param metadata - 要编码的元数据字符串
+ * @returns 包含编码后元数据的新PNG Blob对象
+ */
 export const encodePngMetadata = async ({
   blob,
   metadata,
@@ -44,6 +55,12 @@ export const encodePngMetadata = async ({
   return new Blob([encodePng(chunks)], { type: MIME_TYPES.png });
 };
 
+/**
+ * 从PNG文件中解码元数据
+ * @param blob - 包含编码元数据的PNG文件Blob对象
+ * @returns 解码后的元数据字符串
+ * @throws 如果元数据无效或解码失败
+ */
 export const decodePngMetadata = async (blob: Blob) => {
   const metadata = await getTEXtChunk(blob);
   if (metadata?.keyword === MIME_TYPES.excalidraw) {
@@ -72,6 +89,11 @@ export const decodePngMetadata = async (blob: Blob) => {
 // SVG
 // -----------------------------------------------------------------------------
 
+/**
+ * 将元数据编码到SVG文件中
+ * @param text - 要编码的元数据字符串
+ * @returns 包含编码元数据的SVG注释字符串
+ */
 export const encodeSvgMetadata = async ({ text }: { text: string }) => {
   const base64 = await stringToBase64(
     JSON.stringify(await encode({ text })),
@@ -87,6 +109,12 @@ export const encodeSvgMetadata = async ({ text }: { text: string }) => {
   return metadata;
 };
 
+/**
+ * 从SVG文件中解码元数据
+ * @param svg - 包含编码元数据的SVG字符串
+ * @returns 解码后的元数据字符串
+ * @throws 如果元数据无效或解码失败
+ */
 export const decodeSvgMetadata = async ({ svg }: { svg: string }) => {
   if (svg.includes(`payload-type:${MIME_TYPES.excalidraw}`)) {
     const match = svg.match(

@@ -12,61 +12,82 @@ import { t } from "../../i18n";
 import { useDevice } from "../App";
 import { getShortcutKey } from "../../utils";
 
+// ColorInput组件属性定义
 interface ColorInputProps {
+  // 当前颜色值
   color: string;
+  // 颜色改变时的回调函数
   onChange: (color: string) => void;
+  // 输入框的标签
   label: string;
+  // 颜色选择器类型
   colorPickerType: ColorPickerType;
 }
 
+// ColorInput组件实现
+// 该组件负责颜色输入框的渲染和交互，包括颜色值输入和EyeDropper工具集成
 export const ColorInput = ({
   color,
   onChange,
   label,
   colorPickerType,
 }: ColorInputProps) => {
-  const device = useDevice();
-  const [innerValue, setInnerValue] = useState(color);
-  const [activeSection, setActiveColorPickerSection] = useAtom(
-    activeColorPickerSectionAtom,
-  );
+  // 获取设备信息
+const device = useDevice();
+// 内部输入框的值状态
+const [innerValue, setInnerValue] = useState(color);
+// 当前激活的颜色选择器区域状态
+const [activeSection, setActiveColorPickerSection] = useAtom(
+  activeColorPickerSectionAtom,
+);
 
-  useEffect(() => {
-    setInnerValue(color);
-  }, [color]);
+  // 监听外部color变化，同步更新内部状态
+useEffect(() => {
+  setInnerValue(color);
+}, [color]);
 
-  const changeColor = useCallback(
-    (inputValue: string) => {
-      const value = inputValue.toLowerCase();
-      const color = getColor(value);
+  // 颜色改变处理函数
+const changeColor = useCallback(
+  (inputValue: string) => {
+    // 统一转为小写
+    const value = inputValue.toLowerCase();
+    // 获取有效颜色值
+    const color = getColor(value);
 
-      if (color) {
-        onChange(color);
-      }
-      setInnerValue(value);
-    },
-    [onChange],
-  );
-
-  const inputRef = useRef<HTMLInputElement>(null);
-  const eyeDropperTriggerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
+    // 如果颜色有效则触发回调
+    if (color) {
+      onChange(color);
     }
-  }, [activeSection]);
+    // 更新内部状态
+    setInnerValue(value);
+  },
+  [onChange],
+);
 
-  const [eyeDropperState, setEyeDropperState] = useAtom(
-    activeEyeDropperAtom,
-    jotaiScope,
-  );
+  // 输入框的ref
+const inputRef = useRef<HTMLInputElement>(null);
+// EyeDropper触发按钮的ref
+const eyeDropperTriggerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    return () => {
-      setEyeDropperState(null);
-    };
-  }, [setEyeDropperState]);
+  // 当激活区域为hex时，自动聚焦输入框
+useEffect(() => {
+  if (inputRef.current) {
+    inputRef.current.focus();
+  }
+}, [activeSection]);
+
+  // EyeDropper工具状态
+const [eyeDropperState, setEyeDropperState] = useAtom(
+  activeEyeDropperAtom,
+  jotaiScope,
+);
+
+  // 组件卸载时清除EyeDropper状态
+useEffect(() => {
+  return () => {
+    setEyeDropperState(null);
+  };
+}, [setEyeDropperState]);
 
   return (
     <div className="color-picker__input-label">

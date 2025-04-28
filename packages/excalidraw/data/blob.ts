@@ -14,6 +14,11 @@ import { isValidExcalidrawData, isValidLibrary } from "./json";
 import { restore, restoreLibraryItems } from "./restore";
 import type { ImportedLibraryData } from "./types";
 
+/**
+ * 解析文件内容，根据文件类型调用不同的解码方法
+ * @param blob - 要解析的Blob或File对象
+ * @returns 解析后的文件内容
+ */
 const parseFileContents = async (blob: Blob | File) => {
   let contents: string;
 
@@ -66,6 +71,11 @@ const parseFileContents = async (blob: Blob | File) => {
   return contents;
 };
 
+/**
+ * 获取文件的MIME类型，根据文件名或Blob类型判断
+ * @param blob - Blob对象或文件名
+ * @returns 对应的MIME类型字符串
+ */
 export const getMimeType = (blob: Blob | string): string => {
   let name: string;
   if (typeof blob === "string") {
@@ -88,6 +98,11 @@ export const getMimeType = (blob: Blob | string): string => {
   return "";
 };
 
+/**
+ * 获取文件句柄的类型，根据文件名判断
+ * @param handle - FileSystemHandle对象
+ * @returns 文件类型扩展名（json/excalidraw/png/svg）或null
+ */
 export const getFileHandleType = (handle: FileSystemHandle | null) => {
   if (!handle) {
     return null;
@@ -96,17 +111,32 @@ export const getFileHandleType = (handle: FileSystemHandle | null) => {
   return handle.name.match(/\.(json|excalidraw|png|svg)$/)?.[1] || null;
 };
 
+/**
+ * 判断文件句柄类型是否为图片类型
+ * @param type - 文件类型字符串
+ * @returns 是否为png或svg类型
+ */
 export const isImageFileHandleType = (
   type: string | null,
 ): type is "png" | "svg" => {
   return type === "png" || type === "svg";
 };
 
+/**
+ * 判断文件句柄是否为图片文件
+ * @param handle - FileSystemHandle对象
+ * @returns 是否为图片文件
+ */
 export const isImageFileHandle = (handle: FileSystemHandle | null) => {
   const type = getFileHandleType(handle);
   return type === "png" || type === "svg";
 };
 
+/**
+ * 判断Blob是否为支持的图片类型
+ * @param blob - 要判断的Blob对象
+ * @returns 是否为支持的图片类型
+ */
 export const isSupportedImageFile = (
   blob: Blob | null | undefined,
 ): blob is Blob & { type: ValueOf<typeof IMAGE_MIME_TYPES> } => {
@@ -114,6 +144,14 @@ export const isSupportedImageFile = (
   return !!type && (Object.values(IMAGE_MIME_TYPES) as string[]).includes(type);
 };
 
+/**
+ * 从Blob加载场景或库数据
+ * @param blob - 包含场景或库数据的Blob对象
+ * @param localAppState - 本地应用状态
+ * @param localElements - 本地元素数组
+ * @param fileHandle - 文件句柄（可选）
+ * @returns 解析后的场景或库数据
+ */
 export const loadSceneOrLibraryFromBlob = async (
   blob: Blob | File,
   /** @see restore.localAppState */
@@ -172,6 +210,14 @@ export const loadSceneOrLibraryFromBlob = async (
   }
 };
 
+/**
+ * 从Blob加载场景数据
+ * @param blob - 包含场景数据的Blob对象
+ * @param localAppState - 本地应用状态
+ * @param localElements - 本地元素数组
+ * @param fileHandle - 文件句柄（可选）
+ * @returns 解析后的场景数据
+ */
 export const loadFromBlob = async (
   blob: Blob,
   /** @see restore.localAppState */
@@ -192,6 +238,12 @@ export const loadFromBlob = async (
   return ret.data;
 };
 
+/**
+ * 解析库JSON数据
+ * @param json - JSON字符串
+ * @param defaultStatus - 库项的默认状态
+ * @returns 解析后的库项数组
+ */
 export const parseLibraryJSON = (
   json: string,
   defaultStatus: LibraryItem["status"] = "unpublished",
@@ -204,6 +256,12 @@ export const parseLibraryJSON = (
   return restoreLibraryItems(libraryItems, defaultStatus);
 };
 
+/**
+ * 从Blob加载库数据
+ * @param blob - 包含库数据的Blob对象
+ * @param defaultStatus - 库项的默认状态
+ * @returns 解析后的库项数组
+ */
 export const loadLibraryFromBlob = async (
   blob: Blob,
   defaultStatus: LibraryItem["status"] = "unpublished",
@@ -211,6 +269,11 @@ export const loadLibraryFromBlob = async (
   return parseLibraryJSON(await parseFileContents(blob), defaultStatus);
 };
 
+/**
+ * 将Canvas转换为Blob对象
+ * @param canvas - HTMLCanvasElement或Promise对象
+ * @returns 转换后的Blob对象
+ */
 export const canvasToBlob = async (
   canvas: HTMLCanvasElement | Promise<HTMLCanvasElement>,
 ): Promise<Blob> => {
@@ -235,6 +298,11 @@ export const canvasToBlob = async (
 
 /** generates SHA-1 digest from supplied file (if not supported, falls back
     to a 40-char base64 random id) */
+/**
+ * 从文件生成唯一ID，使用SHA-1算法，失败时回退到随机ID
+ * @param file - 要生成ID的文件
+ * @returns 生成的FileId
+ */
 export const generateIdFromFile = async (file: File): Promise<FileId> => {
   try {
     const hashBuffer = await window.crypto.subtle.digest(
@@ -249,6 +317,11 @@ export const generateIdFromFile = async (file: File): Promise<FileId> => {
   }
 };
 
+/**
+ * 获取文件的DataURL
+ * @param file - 要转换的Blob或File对象
+ * @returns 转换后的DataURL
+ */
 export const getDataURL = async (file: Blob | File): Promise<DataURL> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -261,6 +334,12 @@ export const getDataURL = async (file: Blob | File): Promise<DataURL> => {
   });
 };
 
+/**
+ * 将DataURL转换为File对象
+ * @param dataURL - 要转换的DataURL
+ * @param filename - 生成文件的名称
+ * @returns 转换后的File对象
+ */
 export const dataURLToFile = (dataURL: DataURL, filename = "") => {
   const dataIndexStart = dataURL.indexOf(",");
   const byteString = atob(dataURL.slice(dataIndexStart + 1));
@@ -274,6 +353,12 @@ export const dataURLToFile = (dataURL: DataURL, filename = "") => {
   return new File([ab], filename, { type: mimeType });
 };
 
+/**
+ * 调整图片文件大小
+ * @param file - 要调整的图片文件
+ * @param opts - 调整选项
+ * @returns 调整后的图片文件
+ */
 export const resizeImageFile = async (
   file: File,
   opts: {
@@ -323,12 +408,24 @@ export const resizeImageFile = async (
   );
 };
 
+/**
+ * 将SVG字符串转换为File对象
+ * @param SVGString - SVG字符串
+ * @param filename - 生成文件的名称
+ * @returns 转换后的File对象
+ */
 export const SVGStringToFile = (SVGString: string, filename: string = "") => {
   return new File([new TextEncoder().encode(SVGString)], filename, {
     type: MIME_TYPES.svg,
   }) as File & { type: typeof MIME_TYPES.svg };
 };
 
+/**
+ * 将图片URL转换为File对象
+ * @param imageUrl - 图片URL
+ * @param filename - 生成文件的名称
+ * @returns 转换后的File对象
+ */
 export const ImageURLToFile = async (
   imageUrl: string,
   filename: string = "",
@@ -354,6 +451,11 @@ export const ImageURLToFile = async (
   throw new Error("Error: unsupported file type", { cause: "UNSUPPORTED" });
 };
 
+/**
+ * 从事件中获取文件对象
+ * @param event - 拖放事件对象
+ * @returns 包含文件和文件句柄的对象
+ */
 export const getFileFromEvent = async (
   event: React.DragEvent<HTMLDivElement>,
 ) => {
@@ -363,6 +465,11 @@ export const getFileFromEvent = async (
   return { file: file ? await normalizeFile(file) : null, fileHandle };
 };
 
+/**
+ * 从事件中获取文件句柄
+ * @param event - 拖放事件对象
+ * @returns 文件句柄或null
+ */
 export const getFileHandle = async (
   event: React.DragEvent<HTMLDivElement>,
 ): Promise<FileSystemHandle | null> => {
@@ -383,6 +490,11 @@ export const getFileHandle = async (
 
 /**
  * attempts to detect if a buffer is a valid image by checking its leading bytes
+ */
+/**
+ * 通过检查文件头字节判断实际MIME类型
+ * @param buffer - 文件数据ArrayBuffer
+ * @returns 实际的MIME类型或null
  */
 const getActualMimeTypeFromImage = (buffer: ArrayBuffer) => {
   let mimeType: ValueOf<Pick<typeof MIME_TYPES, "png" | "jpg" | "gif">> | null =
@@ -412,6 +524,13 @@ const getActualMimeTypeFromImage = (buffer: ArrayBuffer) => {
   return mimeType;
 };
 
+/**
+ * 创建新的File对象
+ * @param blob - 文件数据Blob或ArrayBuffer
+ * @param mimeType - MIME类型
+ * @param name - 文件名
+ * @returns 创建的File对象
+ */
 export const createFile = (
   blob: File | Blob | ArrayBuffer,
   mimeType: ValueOf<typeof MIME_TYPES>,
@@ -425,6 +544,11 @@ export const createFile = (
 /** attempts to detect correct mimeType if none is set, or if an image
  * has an incorrect extension.
  * Note: doesn't handle missing .excalidraw/.excalidrawlib extension  */
+/**
+ * 规范化文件对象，修正MIME类型和扩展名
+ * @param file - 要规范化的文件
+ * @returns 规范化后的文件
+ */
 export const normalizeFile = async (file: File) => {
   if (!file.type) {
     if (file?.name?.endsWith(".excalidrawlib")) {
@@ -459,6 +583,11 @@ export const normalizeFile = async (file: File) => {
   return file;
 };
 
+/**
+ * 将Blob转换为ArrayBuffer
+ * @param blob - 要转换的Blob对象
+ * @returns 转换后的ArrayBuffer
+ */
 export const blobToArrayBuffer = (blob: Blob): Promise<ArrayBuffer> => {
   if ("arrayBuffer" in blob) {
     return blob.arrayBuffer();

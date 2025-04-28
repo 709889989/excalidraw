@@ -22,12 +22,23 @@ import { PropertiesPopover } from "../PropertiesPopover";
 
 import "./ColorPicker.scss";
 
+/**
+ * 颜色验证函数
+ * 验证颜色字符串是否有效
+ * @param color - 要验证的颜色字符串
+ * @returns 返回布尔值表示颜色是否有效
+ */
 const isValidColor = (color: string) => {
   const style = new Option().style;
   style.color = color;
   return !!style.color;
 };
 
+/**
+ * 获取有效的颜色值
+ * @param color - 原始颜色字符串
+ * @returns 返回处理后的有效颜色值，若无效则返回null
+ */
 export const getColor = (color: string): string | null => {
   if (isTransparent(color)) {
     return color;
@@ -43,6 +54,18 @@ export const getColor = (color: string): string | null => {
     : null;
 };
 
+/**
+ * ColorPicker组件的属性接口
+ * @param type - 颜色选择器类型
+ * @param color - 当前选中的颜色值
+ * @param onChange - 颜色改变时的回调函数
+ * @param label - 颜色选择器的标签
+ * @param elements - 当前选中的元素
+ * @param appState - 应用状态
+ * @param palette - 自定义颜色调色板
+ * @param topPicks - 常用颜色列表
+ * @param updateData - 更新数据的回调函数
+ */
 interface ColorPickerProps {
   type: ColorPickerType;
   color: string;
@@ -55,6 +78,16 @@ interface ColorPickerProps {
   updateData: (formData?: any) => void;
 }
 
+/**
+ * 弹出框组件
+ * @param type - 颜色选择器类型
+ * @param color - 当前选中的颜色值
+ * @param onChange - 颜色改变时的回调函数
+ * @param label - 颜色选择器的标签
+ * @param elements - 当前选中的元素
+ * @param palette - 颜色调色板
+ * @param updateData - 更新数据的回调函数
+ */
 const ColorPickerPopupContent = ({
   type,
   color,
@@ -174,6 +207,12 @@ const ColorPickerPopupContent = ({
   );
 };
 
+/**
+ * 触发器组件
+ * @param color - 当前选中的颜色值
+ * @param label - 颜色选择器的标签
+ * @param type - 颜色选择器类型
+ */
 const ColorPickerTrigger = ({
   label,
   color,
@@ -201,7 +240,24 @@ const ColorPickerTrigger = ({
     </Popover.Trigger>
   );
 };
-
+// ColorPicker包组件是Excalidraw中用于颜色选择的核心组件，主要作用包括：
+// 1. 颜色选择功能 ：提供颜色选择器界面，允许用户选择或输入颜色值。
+// 2. 颜色管理 ：支持预设颜色、最近使用颜色和自定义颜色的管理。
+// 3. 集成EyeDropper工具 ：允许用户直接从画布中拾取颜色。
+// 4. 颜色格式处理 ：支持处理不同格式的颜色值（如HEX、RGB等）。
+// 5. 状态管理 ：与Excalidraw的状态管理集成，实时更新元素颜色。
+/**
+ * ColorPicker主组件
+ * @param type - 颜色选择器类型
+ * @param color - 当前选中的颜色值
+ * @param onChange - 颜色改变时的回调函数
+ * @param label - 颜色选择器的标签
+ * @param elements - 当前选中的元素
+ * @param palette - 颜色调色板
+ * @param topPicks - 常用颜色列表
+ * @param updateData - 更新数据的回调函数
+ * @param appState - 应用状态
+ */
 export const ColorPicker = ({
   type,
   color,

@@ -1,0 +1,16 @@
+.size-limit.json：用于限制打包后的文件大小，确保项目性能。
+
+功能模块目录和文件
+actions - 管理和定义各种操作行为
+components - 各种 React 组件
+data - 数据处理相关的文件，如文件系统操作、库数据管理、JSON 序列化
+element - 定义和处理 Excalidraw 元素的类型、属性和操作
+
+align.ts - 元素对齐相关的功能
+analytics.ts - 应用的分析和统计事件
+colors.ts - 颜色相关的常量和类型
+constants.ts - 常量，如版本号、文件上传限制
+cursor.ts - 光标相关的逻辑，如缓存和预览数据
+deburr.ts - 处理字符转换相关的逻辑
+distribute.ts - 实现元素分布相关的功能。
+ga.ts、gadirections.ts、galines.ts、gapoints.ts、gatransforms.ts - 与几何代数相关的功能模块，处理线条、点、变换等几何操作

@@ -85,6 +85,11 @@ export type RestoredDataState = {
   files: BinaryFiles;
 };
 
+/**
+ * 根据字体名称获取对应的字体族值
+ * @param fontFamilyName 字体名称
+ * @returns 对应的字体族值，如果未找到则返回默认字体
+ */
 const getFontFamilyByName = (fontFamilyName: string): FontFamilyValues => {
   if (Object.keys(FONT_FAMILY).includes(fontFamilyName)) {
     return FONT_FAMILY[
@@ -94,6 +99,12 @@ const getFontFamilyByName = (fontFamilyName: string): FontFamilyValues => {
   return DEFAULT_FONT_FAMILY;
 };
 
+/**
+ * 修复线性元素的绑定信息
+ * @param element 线性元素
+ * @param binding 绑定信息
+ * @returns 修复后的绑定信息，如果输入为null则返回null
+ */
 const repairBinding = (
   element: ExcalidrawLinearElement,
   binding: PointBinding | null,
@@ -111,6 +122,12 @@ const repairBinding = (
   };
 };
 
+/**
+ * 使用额外属性恢复元素的基本属性
+ * @param element 要恢复的元素
+ * @param extra 额外属性
+ * @returns 恢复后的元素
+ */
 const restoreElementWithProperties = <
   T extends Required<Omit<ExcalidrawElement, "customData">> & {
     customData?: ExcalidrawElement["customData"];
@@ -187,6 +204,11 @@ const restoreElementWithProperties = <
   } as unknown as T;
 };
 
+/**
+ * 根据元素类型恢复元素属性
+ * @param element 要恢复的元素
+ * @returns 恢复后的元素，如果元素类型不支持则返回null
+ */
 const restoreElement = (
   element: Exclude<ExcalidrawElement, ExcalidrawSelectionElement>,
 ): typeof element | null => {
@@ -343,6 +365,12 @@ const restoreElement = (
  *
  * NOTE mutates elements.
  */
+/**
+ * 修复容器元素的绑定元素数组
+ * 移除重复项并修复绑定元素的containerId
+ * @param container 容器元素
+ * @param elementsMap 元素映射表
+ */
 const repairContainerElement = (
   container: Mutable<ExcalidrawElement>,
   elementsMap: Map<string, Mutable<ExcalidrawElement>>,
@@ -391,6 +419,12 @@ const repairContainerElement = (
  *
  * NOTE mutates elements.
  */
+/**
+ * 修复绑定元素的容器绑定
+ * 如果容器不存在则移除containerId
+ * @param boundElement 绑定元素
+ * @param elementsMap 元素映射表
+ */
 const repairBoundElement = (
   boundElement: Mutable<ExcalidrawTextElement>,
   elementsMap: Map<string, Mutable<ExcalidrawElement>>,
@@ -426,6 +460,12 @@ const repairBoundElement = (
  *
  * NOTE mutates elements.
  */
+/**
+ * 修复元素的frameId
+ * 如果包含的frame不存在则移除frameId
+ * @param element 要修复的元素
+ * @param elementsMap 元素映射表
+ */
 const repairFrameMembership = (
   element: Mutable<ExcalidrawElement>,
   elementsMap: Map<string, Mutable<ExcalidrawElement>>,
@@ -439,6 +479,13 @@ const repairFrameMembership = (
   }
 };
 
+/**
+ * 恢复元素数组
+ * @param elements 要恢复的元素数组
+ * @param localElements 本地元素数组
+ * @param opts 恢复选项
+ * @returns 恢复后的有序元素数组
+ */
 export const restoreElements = (
   elements: ImportedDataState["elements"],
   /** NOTE doesn't serve for reconciliation */
@@ -554,6 +601,12 @@ const LegacyAppStateMigrations: {
   },
 };
 
+/**
+ * 恢复应用状态
+ * @param appState 要恢复的应用状态
+ * @param localAppState 本地应用状态
+ * @returns 恢复后的应用状态
+ */
 export const restoreAppState = (
   appState: ImportedDataState["appState"],
   localAppState: Partial<AppState> | null | undefined,

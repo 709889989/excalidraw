@@ -1,25 +1,33 @@
+// 导入项目变量
 @import "../../css/variables.module.scss";
 
+// 定义垂直布局断点
 $verticalBreakpoint: 861px;
 
+// 命令面板样式
 .excalidraw {
+    // 命令面板对话框容器
   .command-palette-dialog {
     user-select: none;
 
+        // 模态框内容区域
     .Modal__content {
       height: auto;
       max-height: 100%;
 
+            // 响应式布局：当屏幕宽度大于断点时
       @media screen and (min-width: $verticalBreakpoint) {
         max-height: 750px;
         height: 100%;
       }
 
+            // 内容区域容器
       .Island {
         height: 100%;
         padding: 1.5rem;
       }
 
+            // 对话框内容区域
       .Dialog__content {
         height: 100%;
         display: flex;
@@ -27,6 +35,7 @@ $verticalBreakpoint: 861px;
       }
     }
 
+        // 快捷键区域容器
     .shortcuts-wrapper {
       display: flex;
       justify-content: center;
@@ -35,7 +44,8 @@ $verticalBreakpoint: 861px;
       gap: 1.5rem;
     }
 
-    .shortcut {
+          // 单个快捷键样式
+      .shortcut {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -43,15 +53,18 @@ $verticalBreakpoint: 861px;
       font-size: 10px;
       gap: 0.25rem;
 
-      .shortcut-wrapper {
+              // 快捷键组合容器
+        .shortcut-wrapper {
         display: flex;
       }
 
-      .shortcut-plus {
+              // 快捷键加号样式
+        .shortcut-plus {
         margin: 0px 4px;
       }
 
-      .shortcut-key {
+              // 快捷键按键样式
+        .shortcut-key {
         padding: 0px 4px;
         height: 16px;
         border-radius: 4px;
@@ -61,12 +74,14 @@ $verticalBreakpoint: 861px;
         background-color: var(--color-primary-light);
       }
 
-      .shortcut-desc {
+              // 快捷键描述文字
+        .shortcut-desc {
         margin-left: 4px;
         color: var(--color-gray-50);
       }
     }
 
+        // 命令列表容器
     .commands {
       overflow-y: auto;
       box-sizing: border-box;
@@ -74,6 +89,7 @@ $verticalBreakpoint: 861px;
       color: var(--popup-text-color);
       user-select: none;
 
+            // 命令分类容器
       .command-category {
         display: flex;
         flex-direction: column;
@@ -81,7 +97,8 @@ $verticalBreakpoint: 861px;
         margin-right: 0.25rem;
       }
 
-      .command-category-title {
+              // 命令分类标题
+        .command-category-title {
         font-size: 1rem;
         font-weight: 600;
         margin-bottom: 6px;
@@ -89,7 +106,8 @@ $verticalBreakpoint: 861px;
         align-items: center;
       }
 
-      .command-item {
+              // 单个命令项样式
+        .command-item {
         color: var(--popup-text-color);
         height: 2.5rem;
         display: flex;
@@ -111,16 +129,19 @@ $verticalBreakpoint: 861px;
         }
       }
 
-      .item-selected {
+              // 选中状态的命令项
+        .item-selected {
         background-color: var(--color-surface-mid);
       }
 
-      .item-disabled {
+              // 禁用状态的命令项
+        .item-disabled {
         opacity: 0.3;
         cursor: not-allowed;
       }
 
-      .no-match {
+              // 无匹配结果提示
+        .no-match {
         display: flex;
         justify-content: center;
         align-items: center;
@@ -128,6 +149,7 @@ $verticalBreakpoint: 861px;
       }
     }
 
+        // 图标样式
     .icon {
       width: 16px;
       height: 16px;

@@ -200,13 +200,26 @@ export type ExcalidrawElementSkeleton =
       name?: string;
     } & Partial<ExcalidrawMagicFrameElement>);
 
+/**
+ * 默认线性元素的宽度和高度属性
+ */
 const DEFAULT_LINEAR_ELEMENT_PROPS = {
   width: 100,
   height: 0,
 };
 
+/**
+ * 默认元素尺寸
+ */
 const DEFAULT_DIMENSION = 100;
 
+/**
+ * 将文本元素绑定到容器元素
+ * @param container 容器元素
+ * @param textProps 文本属性
+ * @param elementsMap 元素映射表
+ * @returns 返回包含容器元素和文本元素的元组
+ */
 const bindTextToContainer = (
   container: ExcalidrawElement,
   textProps: { text: string } & MarkOptional<ElementConstructorOpts, "x" | "y">,
@@ -233,6 +246,15 @@ const bindTextToContainer = (
   return [container, textElement] as const;
 };
 
+/**
+ * 将线性元素绑定到其他元素
+ * @param linearElement 线性元素
+ * @param start 起始绑定元素
+ * @param end 结束绑定元素
+ * @param elementStore 元素存储对象
+ * @param elementsMap 元素映射表
+ * @returns 返回包含线性元素和绑定元素的对象
+ */
 const bindLinearElementToElement = (
   linearElement: ExcalidrawArrowElement,
   start: ValidLinearElement["start"],
@@ -463,6 +485,9 @@ const bindLinearElementToElement = (
   };
 };
 
+/**
+ * 元素存储类，用于管理Excalidraw元素的增删改查
+ */
 class ElementStore {
   excalidrawElements = new Map<string, ExcalidrawElement>();
 
@@ -489,6 +514,12 @@ class ElementStore {
   };
 }
 
+/**
+ * 将元素骨架转换为Excalidraw元素
+ * @param elementsSkeleton 元素骨架数组
+ * @param opts 选项，包含是否重新生成ID
+ * @returns 返回转换后的Excalidraw元素数组
+ */
 export const convertToExcalidrawElements = (
   elementsSkeleton: ExcalidrawElementSkeleton[] | null,
   opts?: { regenerateIds: boolean },

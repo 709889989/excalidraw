@@ -3,6 +3,15 @@ import type { AppState, BinaryFiles } from "../types";
 import { exportCanvas, prepareElementsForExport } from ".";
 import { getFileHandleType, isImageFileHandleType } from "./blob";
 
+/**
+ * 将当前画布重新保存为包含场景信息的图像文件
+ * @param elements - 画布中的元素数组
+ * @param appState - 应用程序状态，包含导出设置等信息
+ * @param files - 二进制文件集合
+ * @param name - 导出文件的名称
+ * @returns 包含文件句柄的对象
+ * @throws 当文件句柄不存在或不是SVG/PNG类型时抛出错误
+ */
 export const resaveAsImageWithScene = async (
   elements: readonly ExcalidrawElement[],
   appState: AppState,

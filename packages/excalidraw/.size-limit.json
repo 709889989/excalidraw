@@ -1,5 +1,6 @@
 [
   {
+    "_comment": "限制打包后的文件大小，确保项目性能",
     "path": "dist/excalidraw.production.min.js",
     "limit": "340 kB"
   },

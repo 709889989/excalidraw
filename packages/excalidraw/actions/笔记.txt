@@ -1,0 +1,25 @@
+actions 包的用途
+actions 包主要用于管理和定义 Excalidraw 应用中的各种操作行为。在一个复杂的应用里，用户交互会触发各种各样的操作，比如删除选中元素、调整元素层级、修改元素属性等，actions 包将这些操作进行模块化管理，使得代码结构清晰、易于维护和扩展。
+
+actions 包的结构
+index.ts 文件作为入口文件，将所有操作统一导出，方便其他模块引入和使用。这种结构使得每个文件职责单一，便于开发和维护。
+
+以下是主要的模块分类：
+元素层级操作：actionZindex.ts 包含了元素向前、向后、置于最前、置于最后等操作。
+选择操作：actionSelectAll.ts 实现全选操作，actionDuplicateSelection.ts 实现复制选中元素操作。
+属性修改操作：actionProperties.ts 包含了修改元素笔触颜色、背景颜色、笔触宽度等属性的操作。
+画布操作：actionCanvas.ts 包含了修改画布背景颜色、清空画布、缩放等操作。
+导出操作：actionExport.ts 包含了修改项目名称、导出背景设置、保存和加载场景等操作。
+样式操作：actionStyles.ts 包含了复制和粘贴样式的操作。
+菜单操作：actionMenu.ts 包含了切换画布菜单、编辑菜单和快捷键操作。
+分组操作：actionGroup.ts 包含了分组和取消分组的操作。
+导航操作：actionNavigate.ts 包含了跳转到协作者位置的操作。
+库操作：actionAddToLibrary.ts 实现将选中元素添加到库的操作。
+对齐和分布操作：actionAlign.ts 和 actionDistribute.ts 分别实现元素对齐和分布的操作。
+翻转操作：actionFlip.ts 包含了水平和垂直翻转元素的操作。
+剪贴板操作：actionClipboard.ts 包含了复制、剪切、复制为 PNG 或 SVG 等操作。
+模式切换操作：actionToggle*.ts 文件包含了切换网格模式、禅模式、对象吸附模式等操作。
+文本绑定操作：actionBoundText.ts 包含了绑定和解除文本绑定的操作。
+链接操作：actionLink.ts 实现链接操作。
+元素锁定操作：actionElementLock.ts 实现元素锁定切换操作。
+线性编辑器操作：actionLinearEditor.ts 实现线性编辑器切换操作。

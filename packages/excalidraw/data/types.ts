@@ -8,6 +8,10 @@ import type {
 import type { cleanAppStateForExport } from "../appState";
 import type { VERSIONS } from "../constants";
 
+/**
+ * 表示导出的绘图数据状态
+ * 包含绘图元素、应用状态和文件信息
+ */
 export interface ExportedDataState {
   type: string;
   version: number;
@@ -29,6 +33,10 @@ export type LegacyAppState = {
   isSidebarDocked: [boolean, "defaultSidebarDockedPreference"];
 };
 
+/**
+ * 表示导入的绘图数据状态
+ * 包含可选的绘图元素、应用状态和文件信息
+ */
 export interface ImportedDataState {
   type?: string;
   version?: number;
@@ -46,6 +54,10 @@ export interface ImportedDataState {
   files?: BinaryFiles;
 }
 
+/**
+ * 表示导出的库数据
+ * 包含库项目的版本和来源信息
+ */
 export interface ExportedLibraryData {
   type: string;
   version: typeof VERSIONS.excalidrawLibrary;
@@ -53,6 +65,10 @@ export interface ExportedLibraryData {
   libraryItems: LibraryItems;
 }
 
+/**
+ * 表示导入的库数据
+ * 继承自ExportedLibraryData，支持部分属性和旧版本兼容
+ */
 export interface ImportedLibraryData extends Partial<ExportedLibraryData> {
   /** @deprecated v1 */
   library?: LibraryItems;

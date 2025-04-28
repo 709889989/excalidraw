@@ -16,56 +16,90 @@ import type {
 import { isRenderThrottlingEnabled } from "../../reactUtils";
 import { renderInteractiveScene } from "../../renderer/interactiveScene";
 
+/**
+ * InteractiveCanvas组件的属性类型定义
+ * 包含画布、元素、状态等配置信息
+ */
 type InteractiveCanvasProps = {
+  // 画布容器的React ref对象
   containerRef: React.RefObject<HTMLDivElement>;
+  // HTML canvas元素，用于绘制图形
   canvas: HTMLCanvasElement | null;
+  // 可渲染元素映射表
   elementsMap: RenderableElementsMap;
+  // 当前可见元素的只读数组
   visibleElements: readonly NonDeletedExcalidrawElement[];
+  // 当前选中元素的只读数组
   selectedElements: readonly NonDeletedExcalidrawElement[];
+  // 所有场景元素的映射表
   allElementsMap: NonDeletedSceneElementsMap;
+  // 场景随机数，用于检测场景变化
   sceneNonce: number | undefined;
+  // 选择随机数，用于检测选择变化
   selectionNonce: number | undefined;
+  // 画布的缩放比例
   scale: number;
+  // 交互式画布的应用状态
   appState: InteractiveCanvasAppState;
+  // 设备信息
   device: Device;
+  // 交互场景渲染回调函数
   renderInteractiveSceneCallback: (
     data: RenderInteractiveSceneCallback,
   ) => void;
+  // 处理画布ref的回调函数
   handleCanvasRef: (canvas: HTMLCanvasElement | null) => void;
+  // 右键菜单事件处理函数
   onContextMenu: Exclude<
     DOMAttributes<HTMLCanvasElement | HTMLDivElement>["onContextMenu"],
     undefined
   >;
+  // 指针移动事件处理函数
   onPointerMove: Exclude<
     DOMAttributes<HTMLCanvasElement>["onPointerMove"],
     undefined
   >;
+  // 指针抬起事件处理函数
   onPointerUp: Exclude<
     DOMAttributes<HTMLCanvasElement>["onPointerUp"],
     undefined
   >;
+  // 指针取消事件处理函数
   onPointerCancel: Exclude<
     DOMAttributes<HTMLCanvasElement>["onPointerCancel"],
     undefined
   >;
+  // 触摸移动事件处理函数
   onTouchMove: Exclude<
     DOMAttributes<HTMLCanvasElement>["onTouchMove"],
     undefined
   >;
+  // 指针按下事件处理函数
   onPointerDown: Exclude<
     DOMAttributes<HTMLCanvasElement>["onPointerDown"],
     undefined
   >;
+  // 双击事件处理函数
   onDoubleClick: Exclude<
     DOMAttributes<HTMLCanvasElement>["onDoubleClick"],
     undefined
   >;
 };
 
+/**
+ * 交互式画布组件，负责处理用户交互和实时渲染
+ * @param props - 组件属性，包含画布、元素、状态等配置
+ * @returns 返回一个HTML canvas元素
+ */
 const InteractiveCanvas = (props: InteractiveCanvasProps) => {
   const isComponentMounted = useRef(false);
 
-  useEffect(() => {
+  // * 处理画布渲染和协作指针更新的副作用钩子
+  // * 主要功能：
+  // * - 初始化组件挂载状态
+  // * - 处理协作指针的渲染配置
+  // * - 调用renderInteractiveScene进行画布渲染
+useEffect(() => {
     if (!isComponentMounted.current) {
       isComponentMounted.current = true;
       return;
@@ -145,7 +179,9 @@ const InteractiveCanvas = (props: InteractiveCanvasProps) => {
     );
   });
 
-  return (
+  // 返回一个HTML canvas元素，用于交互式绘图
+  // 包含各种事件处理程序和样式配置
+return (
     <canvas
       className="excalidraw__canvas interactive"
       style={{
@@ -173,6 +209,11 @@ const InteractiveCanvas = (props: InteractiveCanvasProps) => {
   );
 };
 
+/**
+ * 从完整的应用状态中提取与交互画布相关的属性
+ * @param appState - 完整的应用状态对象
+ * @returns 返回与交互画布相关的状态属性
+ */
 const getRelevantAppStateProps = (
   appState: AppState,
 ): InteractiveCanvasAppState => ({
@@ -205,6 +246,12 @@ const getRelevantAppStateProps = (
   editingElement: appState.editingElement,
 });
 
+/**
+ * 比较前后props是否相等，用于React.memo的性能优化
+ * @param prevProps - 前一次的props
+ * @param nextProps - 下一次的props
+ * @returns 返回布尔值表示props是否相等
+ */
 const areEqual = (
   prevProps: InteractiveCanvasProps,
   nextProps: InteractiveCanvasProps,

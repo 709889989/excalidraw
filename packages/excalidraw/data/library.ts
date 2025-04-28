@@ -168,25 +168,41 @@ const createLibraryUpdate = (
   return update;
 };
 
+/**
+ * Library类负责管理Excalidraw的库项，包括加载、保存、更新等操作。
+ * 使用队列机制确保更新操作的顺序性，并提供事件通知功能。
+ */
 class Library {
   /** latest libraryItems */
-  private currLibraryItems: LibraryItems = [];
+  /** 当前库项列表，存储最新的库项数据 */
+private currLibraryItems: LibraryItems = [];
   /** snapshot of library items since last onLibraryChange call */
-  private prevLibraryItems = cloneLibraryItems(this.currLibraryItems);
+  /** 上一次变更时的库项快照，用于比较变更 */
+private prevLibraryItems = cloneLibraryItems(this.currLibraryItems);
 
-  private app: App;
+  /** 关联的App实例，用于操作UI和状态 */
+private app: App;
 
   constructor(app: App) {
     this.app = app;
   }
 
-  private updateQueue: Promise<LibraryItems>[] = [];
+  /** 更新任务队列，确保库项更新操作的顺序性 */
+private updateQueue: Promise<LibraryItems>[] = [];
 
-  private getLastUpdateTask = (): Promise<LibraryItems> | undefined => {
+  /**
+ * 获取队列中最后一个更新任务
+ * @returns 最后一个更新任务，如果队列为空则返回undefined
+ */
+private getLastUpdateTask = (): Promise<LibraryItems> | undefined => {
     return this.updateQueue[this.updateQueue.length - 1];
   };
 
-  private notifyListeners = () => {
+  /**
+ * 通知所有监听器库项已更新
+ * 更新库项状态并触发相关事件
+ */
+private notifyListeners = () => {
     if (this.updateQueue.length > 0) {
       jotaiStore.set(libraryItemsAtom, (s) => ({
         status: "loading",
@@ -219,7 +235,11 @@ class Library {
   };
 
   /** call on excalidraw instance unmount */
-  destroy = () => {
+  /**
+ * 销毁Library实例
+ * 清空队列和缓存，重置状态
+ */
+destroy = () => {
     this.updateQueue = [];
     this.currLibraryItems = [];
     jotaiStore.set(libraryItemSvgsCache, new Map());
@@ -231,14 +251,23 @@ class Library {
     // });
   };
 
-  resetLibrary = () => {
+  /**
+ * 重置库项
+ * @returns 返回一个空库项的Promise
+ */
+resetLibrary = () => {
     return this.setLibrary([]);
   };
 
   /**
    * @returns latest cloned libraryItems. Awaits all in-progress updates first.
    */
-  getLatestLibrary = (): Promise<LibraryItems> => {
+  /**
+ * 获取最新的库项列表
+ * 等待所有更新任务完成后返回克隆的库项列表
+ * @returns 包含最新库项列表的Promise
+ */
+getLatestLibrary = (): Promise<LibraryItems> => {
     return new Promise(async (resolve) => {
       try {
         const libraryItems = await (this.getLastUpdateTask() ||
@@ -257,7 +286,17 @@ class Library {
   // NOTE this is a high-level public API (exposed on ExcalidrawAPI) with
   // a slight overhead (always restoring library items). For internal use
   // where merging isn't needed, use `library.setLibrary()` directly.
-  updateLibrary = async ({
+  /**
+ * 更新库项
+ * @param options 更新选项
+ * @param options.libraryItems 新的库项数据源
+ * @param options.prompt 是否显示确认提示
+ * @param options.merge 是否合并新库项
+ * @param options.openLibraryMenu 是否打开库菜单
+ * @param options.defaultStatus 新库项的默认状态
+ * @returns 包含更新后库项列表的Promise
+ */
+updateLibrary = async ({
     libraryItems,
     prompt = false,
     merge = false,
@@ -321,7 +360,12 @@ class Library {
     });
   };
 
-  setLibrary = (
+  /**
+ * 设置库项
+ * @param libraryItems 新的库项数据，可以是数组、Promise或回调函数
+ * @returns 包含更新后库项列表的Promise
+ */
+setLibrary = (
     /**
      * LibraryItems that will replace current items. Can be a function which
      * will be invoked after all previous tasks are resolved

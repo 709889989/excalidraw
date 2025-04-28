@@ -16,6 +16,13 @@ export type ReconciledExcalidrawElement = OrderedExcalidrawElement &
 export type RemoteExcalidrawElement = OrderedExcalidrawElement &
   MakeBrand<"RemoteExcalidrawElement">;
 
+/**
+ * 判断是否应该丢弃远程元素
+ * @param localAppState 本地应用状态
+ * @param local 本地元素（可能未定义）
+ * @param remote 远程元素
+ * @returns 如果应该丢弃远程元素则返回true，否则返回false
+ */
 const shouldDiscardRemoteElement = (
   localAppState: AppState,
   local: OrderedExcalidrawElement | undefined,
@@ -39,6 +46,12 @@ const shouldDiscardRemoteElement = (
   return false;
 };
 
+/**
+ * 验证元素索引，使用节流函数优化性能
+ * @param orderedElements 已排序的元素数组
+ * @param localElements 本地元素数组
+ * @param remoteElements 远程元素数组
+ */
 const validateIndicesThrottled = throttle(
   (
     orderedElements: readonly OrderedExcalidrawElement[],
@@ -70,6 +83,13 @@ const validateIndicesThrottled = throttle(
   { leading: true, trailing: false },
 );
 
+/**
+ * 协调本地和远程元素，返回合并后的元素数组
+ * @param localElements 本地元素数组
+ * @param remoteElements 远程元素数组
+ * @param localAppState 本地应用状态
+ * @returns 合并后的元素数组
+ */
 export const reconcileElements = (
   localElements: readonly OrderedExcalidrawElement[],
   remoteElements: readonly RemoteExcalidrawElement[],

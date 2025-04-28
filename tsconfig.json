@@ -14,7 +14,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx" // 配置对tsx文件支持
   },
   "include": ["packages", "excalidraw-app"],
   "exclude": ["packages/excalidraw/types", "examples"]

@@ -1,3 +1,4 @@
+// 文件系统操作相关类型和工具函数
 import type { FileSystemHandle } from "browser-fs-access";
 import {
   fileOpen as _fileOpen,
@@ -8,10 +9,20 @@ import { EVENT, MIME_TYPES } from "../constants";
 import { AbortError } from "../errors";
 import { debounce } from "../utils";
 
+// 文件扩展名类型，排除二进制类型
 type FILE_EXTENSION = Exclude<keyof typeof MIME_TYPES, "binary">;
 
+// 文件输入检查间隔时间（毫秒）
 const INPUT_CHANGE_INTERVAL_MS = 500;
 
+/**
+ * 打开文件对话框
+ * @param opts 配置选项
+ * @param opts.extensions 允许的文件扩展名列表
+ * @param opts.description 文件选择器描述
+ * @param opts.multiple 是否允许多选
+ * @returns 返回File对象或File数组的Promise
+ */
 export const fileOpen = <M extends boolean | undefined = false>(opts: {
   extensions?: FILE_EXTENSION[];
   description: string;
@@ -75,6 +86,16 @@ export const fileOpen = <M extends boolean | undefined = false>(opts: {
   }) as Promise<RetType>;
 };
 
+/**
+ * 保存文件
+ * @param blob 要保存的Blob对象或Promise
+ * @param opts 配置选项
+ * @param opts.name 文件名（不带扩展名）
+ * @param opts.extension 文件扩展名
+ * @param opts.description 文件保存对话框描述
+ * @param opts.fileHandle 已有的文件系统句柄
+ * @returns 返回保存操作的Promise
+ */
 export const fileSave = (
   blob: Blob | Promise<Blob>,
   opts: {

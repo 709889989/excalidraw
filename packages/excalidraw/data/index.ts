@@ -34,6 +34,13 @@ export type ExportedElements = readonly NonDeletedExcalidrawElement[] & {
   _brand: "exportedElements";
 };
 
+/**
+ * 准备要导出的元素，根据是否仅导出选中元素进行处理
+ * @param elements - 所有元素数组
+ * @param selectedElementIds - 当前选中的元素ID集合
+ * @param exportSelectionOnly - 是否仅导出选中元素
+ * @returns 返回导出帧（如果有）和准备导出的元素
+ */
 export const prepareElementsForExport = (
   elements: readonly ExcalidrawElement[],
   { selectedElementIds }: Pick<AppState, "selectedElementIds">,
@@ -81,6 +88,22 @@ export const prepareElementsForExport = (
   };
 };
 
+/**
+ * 导出画布内容到指定格式
+ * @param type - 导出类型（svg/png/clipboard等）
+ * @param elements - 要导出的元素
+ * @param appState - 应用状态
+ * @param files - 二进制文件
+ * @param options - 导出选项，包括：
+ *   exportBackground - 是否导出背景
+ *   exportPadding - 导出边距
+ *   viewBackgroundColor - 视图背景色
+ *   name - 文件名
+ *   fileHandle - 文件系统句柄
+ *   exportingFrame - 导出帧
+ * @returns 根据导出类型返回不同的结果
+ * @throws 如果导出失败会抛出错误
+ */
 export const exportCanvas = async (
   type: Omit<ExportType, "backend">,
   elements: ExportedElements,
