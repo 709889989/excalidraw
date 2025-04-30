@@ -1,6 +1,7 @@
 import { arrayToMapWithIndex } from "../utils";
 import type { ExcalidrawElement } from "./types";
 
+// 规范化分组元素顺序的方法
 const normalizeGroupElementOrder = (elements: readonly ExcalidrawElement[]) => {
   const origElements: ExcalidrawElement[] = elements.slice();
   const sortedElements = new Set<ExcalidrawElement>();
@@ -63,6 +64,8 @@ const normalizeGroupElementOrder = (elements: readonly ExcalidrawElement[]) => {
  * This function sorts containers and their bound texts together. It prefers
  * original z-index of container (i.e. it moves bound text elements after
  * containers).
+ *
+ * 规范化容器及其绑定文本元素顺序的方法
  */
 const normalizeBoundElementsOrder = (
   elements: readonly ExcalidrawElement[],
@@ -113,6 +116,7 @@ const normalizeBoundElementsOrder = (
   return [...sortedElements];
 };
 
+// 规范化元素顺序的导出方法
 export const normalizeElementOrder = (
   elements: readonly ExcalidrawElement[],
 ) => {

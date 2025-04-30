@@ -30,6 +30,7 @@ import {
 } from "./containerCache";
 import type { ExtractSetType } from "../utility-types";
 
+// 规范化文本，替换换行符并将制表符替换为空格，保证渲染和测量的一致性
 export const normalizeText = (text: string) => {
   return (
     normalizeEOL(text)
@@ -38,10 +39,12 @@ export const normalizeText = (text: string) => {
   );
 };
 
+// 按行分割文本
 const splitIntoLines = (text: string) => {
   return normalizeText(text).split("\n");
 };
 
+// 重新计算文本元素的包围盒尺寸和位置
 export const redrawTextBoundingBox = (
   textElement: ExcalidrawTextElement,
   container: ExcalidrawElement | null,
@@ -121,6 +124,15 @@ export const redrawTextBoundingBox = (
   mutateElement(textElement, boundTextUpdates, informMutation);
 };
 
+/**
+ * 在复制图形后，将文本绑定到新的图形上。
+ *
+ * @param newElements 新的图形元素数组，包含复制后的图形。
+ * @param oldElements 原始的图形元素数组，包含复制前的图形。
+ * @param oldIdToDuplicatedId 一个映射表，用于将旧的图形元素 ID 映射到复制后的新 ID。
+ *
+ * 此方法会更新新的图形元素，使其绑定到正确的文本元素上，同时更新文本元素的容器 ID。
+ */
 export const bindTextToShapeAfterDuplication = (
   newElements: ExcalidrawElement[],
   oldElements: ExcalidrawElement[],
@@ -869,6 +881,10 @@ export const getBoundTextMaxHeight = (
   return height - BOUND_TEXT_PADDING * 2;
 };
 
+/**
+ * 检查当前环境是否支持 measureText 方法。
+ * 返回宽度大于 0 表示支持。
+ */
 export const isMeasureTextSupported = () => {
   const width = getTextWidth(
     DUMMY_TEXT,
@@ -880,6 +896,10 @@ export const isMeasureTextSupported = () => {
   return width > 0;
 };
 
+/**
+ * 获取文本元素的最小宽度。
+ * 计算空字符串的宽度并加上内边距。
+ */
 export const getMinTextElementWidth = (
   font: FontString,
   lineHeight: ExcalidrawTextElement["lineHeight"],

@@ -84,6 +84,7 @@ const OMIT_SIDES_FOR_LINE_BACKSLASH = {
   w: true,
 };
 
+// 生成变换手柄的边界框
 const generateTransformHandle = (
   x: number,
   y: number,
@@ -97,6 +98,7 @@ const generateTransformHandle = (
   return [xx - width / 2, yy - height / 2, width, height];
 };
 
+// 判断设备是否可以从边进行缩放
 export const canResizeFromSides = (device: Device) => {
   if (device.viewport.isMobile) {
     return false;
@@ -109,6 +111,7 @@ export const canResizeFromSides = (device: Device) => {
   return true;
 };
 
+// 根据设备获取需要省略的边
 export const getOmitSidesForDevice = (device: Device) => {
   if (canResizeFromSides(device)) {
     return DEFAULT_OMIT_SIDES;
@@ -117,6 +120,7 @@ export const getOmitSidesForDevice = (device: Device) => {
   return {};
 };
 
+// 根据坐标获取变换手柄
 export const getTransformHandlesFromCoords = (
   [x1, y1, x2, y2, cx, cy]: [number, number, number, number, number, number],
   angle: number,
@@ -256,6 +260,7 @@ export const getTransformHandlesFromCoords = (
   return transformHandles;
 };
 
+// 获取元素的变换手柄
 export const getTransformHandles = (
   element: ExcalidrawElement,
   zoom: Zoom,
@@ -309,6 +314,7 @@ export const getTransformHandles = (
   );
 };
 
+// 判断是否显示包围盒
 export const shouldShowBoundingBox = (
   elements: readonly NonDeletedExcalidrawElement[],
   appState: InteractiveCanvasAppState,

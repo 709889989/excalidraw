@@ -9,6 +9,8 @@ import { viewportCoordsToSceneCoords } from "../utils";
 // TODO:  remove invisible elements consistently actions, so that invisible elements are not recorded by the store, exported, broadcasted or persisted
 //        - perhaps could be as part of a standalone 'cleanup' action, in addition to 'finalize'
 //        - could also be part of `_clearElements`
+
+// 判断元素是否不可见（宽高为0或点数过少）
 export const isInvisiblySmallElement = (
   element: ExcalidrawElement,
 ): boolean => {
@@ -18,6 +20,7 @@ export const isInvisiblySmallElement = (
   return element.width === 0 && element.height === 0;
 };
 
+// 判断元素是否在视口内
 export const isElementInViewport = (
   element: ExcalidrawElement,
   width: number,
@@ -58,6 +61,7 @@ export const isElementInViewport = (
 /**
  * Makes a perfect shape or diagonal/horizontal/vertical line
  */
+// 获取完美形状或锁定角度的线段尺寸
 export const getPerfectElementSize = (
   elementType: AppState["activeTool"]["type"],
   width: number,
@@ -87,6 +91,7 @@ export const getPerfectElementSize = (
   return { width, height };
 };
 
+// 获取锁定角度下的线段尺寸
 export const getLockedLinearCursorAlignSize = (
   originX: number,
   originY: number,
@@ -127,6 +132,7 @@ export const getLockedLinearCursorAlignSize = (
   return { width, height };
 };
 
+// 用于调整线段左上角的尺寸（NW handler）
 export const resizePerfectLineForNWHandler = (
   element: ExcalidrawElement,
   x: number,
@@ -162,6 +168,7 @@ export const resizePerfectLineForNWHandler = (
   }
 };
 
+// 获取归一化后的元素尺寸和坐标
 export const getNormalizedDimensions = (
   element: Pick<ExcalidrawElement, "width" | "height" | "x" | "y">,
 ): {

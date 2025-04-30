@@ -47,6 +47,7 @@ import {
   updateOriginalContainerCache,
 } from "./containerCache";
 
+// 计算变换字符串，包括平移、缩放和旋转
 const getTransform = (
   width: number,
   height: number,
@@ -68,6 +69,13 @@ const getTransform = (
   return `translate(${translateX}px, ${translateY}px) scale(${zoom.value}) rotate(${degree}deg)`;
 };
 
+// 画布上的富文本（WYSIWYG）文本编辑器的核心逻辑。其主要作用如下：
+
+// 创建和管理文本编辑器：动态创建 <textarea> 元素，作为文本元素的可视化编辑器，并根据文本元素的属性（如字体、字号、对齐方式等）实时同步样式和位置。
+// 处理文本输入和格式化：支持文本输入、粘贴、缩进（Tab/Shift+Tab）、撤销、字体大小调整、对齐等操作，并在输入时自动调整文本框尺寸。
+// 与容器元素联动：支持文本与容器（如矩形、箭头等）的绑定，自动计算文本在容器内的对齐和位置，必要时自动调整容器大小以适应文本内容。
+// 事件管理：处理键盘、鼠标、窗口大小变化等事件，确保编辑器行为与画布交互一致，如自动提交、失焦、阻止默认事件等。
+// 同步数据与提交：编辑完成后，将文本内容和属性同步回 Excalidraw 的数据模型，并触发必要的回调。
 export const textWysiwyg = ({
   id,
   onChange,
@@ -95,6 +103,7 @@ export const textWysiwyg = ({
   app: App;
   autoSelect?: boolean;
 }) => {
+  // 检查文本属性是否已更新
   const textPropertiesUpdated = (
     updatedTextElement: ExcalidrawTextElement,
     editable: HTMLTextAreaElement,
@@ -102,6 +111,7 @@ export const textWysiwyg = ({
     if (!editable.style.fontFamily || !editable.style.fontSize) {
       return false;
     }
+    // 获取当前字体
     const currentFont = editable.style.fontFamily.replace(/"/g, "");
     if (
       getFontFamilyString({ fontFamily: updatedTextElement.fontFamily }) !==

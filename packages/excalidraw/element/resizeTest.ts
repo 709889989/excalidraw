@@ -28,6 +28,7 @@ import {
 import type { Line, Point } from "../../utils/geometry/shape";
 import { isLinearElement } from "./typeChecks";
 
+// 判断点 (x, y) 是否在变换手柄 transformHandle 内部
 const isInsideTransformHandle = (
   transformHandle: TransformHandle,
   x: number,
@@ -38,6 +39,7 @@ const isInsideTransformHandle = (
   y >= transformHandle[1] &&
   y <= transformHandle[1] + transformHandle[3];
 
+// 检测 (x, y) 是否在元素的变换手柄上，返回手柄类型，否则返回 false
 export const resizeTest = (
   element: NonDeletedExcalidrawElement,
   elementsMap: ElementsMap,
@@ -109,6 +111,7 @@ export const resizeTest = (
   return false;
 };
 
+// 遍历所有元素，判断 (scenePointerX, scenePointerY) 是否在某个元素的变换手柄上，返回对应元素和手柄类型
 export const getElementWithTransformHandleType = (
   elements: readonly NonDeletedExcalidrawElement[],
   appState: AppState,
@@ -137,6 +140,7 @@ export const getElementWithTransformHandleType = (
   }, null as { element: NonDeletedExcalidrawElement; transformHandleType: MaybeTransformHandleType } | null);
 };
 
+// 根据坐标判断 (scenePointerX, scenePointerY) 是否在变换手柄上，返回手柄类型，否则返回 false
 export const getTransformHandleTypeFromCoords = (
   [x1, y1, x2, y2]: Bounds,
   scenePointerX: number,
@@ -191,6 +195,7 @@ export const getTransformHandleTypeFromCoords = (
 };
 
 const RESIZE_CURSORS = ["ns", "nesw", "ew", "nwse"];
+// 根据角度旋转调整 resize 光标样式
 const rotateResizeCursor = (cursor: string, angle: number) => {
   const index = RESIZE_CURSORS.indexOf(cursor);
   if (index >= 0) {
@@ -203,6 +208,7 @@ const rotateResizeCursor = (cursor: string, angle: number) => {
 /*
  * Returns bi-directional cursor for the element being resized
  */
+// 获取元素缩放时对应的双向光标样式
 export const getCursorForResizingElement = (resizingElement: {
   element?: ExcalidrawElement;
   transformHandleType: MaybeTransformHandleType;
@@ -248,6 +254,7 @@ export const getCursorForResizingElement = (resizingElement: {
   return cursor ? `${cursor}-resize` : "";
 };
 
+// 获取元素旋转后四条边的坐标，用于判断边框上的缩放操作
 const getSelectionBorders = (
   [x1, y1]: Point,
   [x2, y2]: Point,

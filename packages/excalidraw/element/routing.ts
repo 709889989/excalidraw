@@ -46,6 +46,15 @@ import type {
   OrderedExcalidrawElement,
 } from "./types";
 
+// 折线箭头”（elbow arrow）的路径自动寻路和路由算法实现。其核心作用包括：
+
+// A* 路由算法实现：通过 A* 算法在动态生成的网格（Grid）上寻找从起点到终点的最优折线路径，自动避开障碍和元素边界。
+// 网格与节点管理：定义了节点（Node）和网格（Grid）类型，负责根据元素边界动态生成寻路用的网格节点。
+// 路径点归一化与简化：对寻路得到的路径点进行归一化和简化，保证箭头路径美观且折点最少。
+// 与元素绑定和吸附：处理箭头与可绑定元素（如矩形、椭圆等）的吸附、绑定、方向推断等逻辑。
+// 辅助工具函数：如距离计算、邻居节点查找、方向推断、边界框生成等。
+
+// 节点类型定义，用于A*寻路算法中的网格节点
 type Node = {
   f: number;
   g: number;
@@ -65,6 +74,7 @@ type Grid = {
 
 const BASE_PADDING = 40;
 
+// 变更折线箭头元素的路径和相关属性
 export const mutateElbowArrow = (
   arrow: ExcalidrawElbowArrowElement,
   scene: Scene,
@@ -315,6 +325,7 @@ export const mutateElbowArrow = (
   }
 };
 
+// 根据方向计算偏移量
 const offsetFromHeading = (
   heading: Heading,
   head: number,
@@ -343,6 +354,7 @@ const offsetFromHeading = (
  * 1) Arrow segment direction change is penalized by specific linear constant (bendMultiplier)
  * 2) Arrow segments are not allowed to go "backwards", overlapping with the previous segment
  */
+// 基于A*路径搜索算法的路由算法
 const astar = (
   start: Node,
   end: Node,
@@ -454,6 +466,7 @@ const astar = (
   return null;
 };
 
+// 从起点到当前节点的路径
 const pathTo = (start: Node, node: Node) => {
   let curr = node;
   const path = [];
@@ -466,6 +479,7 @@ const pathTo = (start: Node, node: Node) => {
   return path;
 };
 
+// 曼哈顿距离计算
 const m_dist = (a: Point, b: Point) =>
   Math.abs(a[0] - b[0]) + Math.abs(a[1] - b[1]);
 
@@ -474,6 +488,7 @@ const m_dist = (a: Point, b: Point) =>
  * bounding boxes having a minimum extent represented
  * by the given static bounds.
  */
+// 创建动态调整大小的总是接触的边界框，具有由给定静态边界表示的最小范围
 const generateDynamicAABBs = (
   a: Bounds,
   b: Bounds,
@@ -635,6 +650,7 @@ const generateDynamicAABBs = (
  * NOTE: This is not a uniform grid. It is built at
  * various intersections of bounding boxes.
  */
+// 计算网格，用作A*算法中网格线交点的节点
 const calculateGrid = (
   aabbs: Bounds[],
   start: Point,
@@ -692,6 +708,7 @@ const calculateGrid = (
   };
 };
 
+// 获取边界框的连接点位置
 const getDonglePosition = (
   bounds: Bounds,
   heading: Heading,
@@ -708,6 +725,7 @@ const getDonglePosition = (
   return [bounds[0], point[1]];
 };
 
+// 估算段数
 const estimateSegmentCount = (
   start: Node,
   end: Node,
@@ -826,6 +844,7 @@ const estimateSegmentCount = (
 /**
  * Get neighboring points for a gived grid address
  */
+// 获取给定网格地址的邻居点
 const getNeighbors = ([col, row]: [number, number], grid: Grid) =>
   [
     gridNodeFromAddr([col, row - 1], grid),
@@ -834,6 +853,7 @@ const getNeighbors = ([col, row]: [number, number], grid: Grid) =>
     gridNodeFromAddr([col - 1, row], grid),
   ] as [Node | null, Node | null, Node | null, Node | null];
 
+// 从地址获取网格节点
 const gridNodeFromAddr = (
   [col, row]: [col: number, row: number],
   grid: Grid,
@@ -848,6 +868,7 @@ const gridNodeFromAddr = (
 /**
  * Get node for global point on canvas (if exists)
  */
+// 获取画布上的全局点对应的节点（如果存在）
 const pointToGridNode = (point: Point, grid: Grid): Node | null => {
   for (let col = 0; col < grid.col; col++) {
     for (let row = 0; row < grid.row; row++) {
@@ -865,6 +886,7 @@ const pointToGridNode = (point: Point, grid: Grid): Node | null => {
   return null;
 };
 
+// 计算公共边界框
 const commonAABB = (aabbs: Bounds[]): Bounds => [
   Math.min(...aabbs.map((aabb) => aabb[0])),
   Math.min(...aabbs.map((aabb) => aabb[1])),
@@ -874,6 +896,7 @@ const commonAABB = (aabbs: Bounds[]): Bounds => [
 
 /// #region Utils
 
+// 根据ID获取可绑定元素
 const getBindableElementForId = (
   id: string,
   elementsMap: ElementsMap,
@@ -886,6 +909,7 @@ const getBindableElementForId = (
   return null;
 };
 
+// 归一化箭头元素更新
 const normalizedArrowElementUpdate = (
   global: Point[],
   externalOffsetX?: number,
@@ -907,6 +931,7 @@ const normalizedArrowElementUpdate = (
 };
 
 /// If last and current segments have the same heading, skip the middle point
+// 如果最后一个和当前段具有相同的方向，则跳过中间点
 const simplifyElbowArrowPoints = (points: Point[]): Point[] =>
   points
     .slice(2)
@@ -923,6 +948,7 @@ const simplifyElbowArrowPoints = (points: Point[]): Point[] =>
       [points[0] ?? [0, 0], points[1] ?? [1, 0]],
     );
 
+// 邻居索引到方向的映射
 const neighborIndexToHeading = (idx: number): Heading => {
   switch (idx) {
     case 0:
@@ -935,6 +961,7 @@ const neighborIndexToHeading = (idx: number): Heading => {
   return HEADING_LEFT;
 };
 
+// 获取所有元素的映射
 const getAllElementsMap = (
   scene: Scene,
   changedElements?: Map<string, OrderedExcalidrawElement>,
@@ -945,6 +972,7 @@ const getAllElementsMap = (
       )
     : scene.getNonDeletedElementsMap();
 
+// 获取所有元素
 const getAllElements = (
   scene: Scene,
   changedElements?: Map<string, OrderedExcalidrawElement>,
@@ -956,6 +984,7 @@ const getAllElements = (
       ] as NonDeletedExcalidrawElement[])
     : scene.getNonDeletedElements();
 
+// 获取全局点
 const getGlobalPoint = (
   fixedPointRatio: [number, number] | undefined | null,
   initialPoint: Point,
@@ -998,6 +1027,7 @@ const getGlobalPoint = (
   return initialPoint;
 };
 
+// 获取绑定点的方向
 const getSnapPoint = (
   point: Point,
   otherPoint: Point,
@@ -1013,6 +1043,7 @@ const getSnapPoint = (
     elementsMap,
   );
 
+// 获取绑定点的方向
 const getBindPointHeading = (
   point: Point,
   otherPoint: Point,
