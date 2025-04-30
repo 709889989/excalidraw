@@ -20,6 +20,7 @@ import { isElementInViewport } from "../element/sizeHelpers";
  * Given an array of selected elements, if there are frames and their containing elements
  * we only keep the frames.
  * @param selectedElements
+ * 中文：排除选中元素中属于已选中的框架（frame）的元素，只保留框架本身。
  */
 export const excludeElementsInFramesFromSelection = <
   T extends ExcalidrawElement,
@@ -42,6 +43,13 @@ export const excludeElementsInFramesFromSelection = <
   });
 };
 
+/**
+ * 获取在选区(selection)内的所有元素。
+ * @param elements
+ * @param selection
+ * @param elementsMap
+ * @param excludeElementsInFrames
+ */
 export const getElementsWithinSelection = (
   elements: readonly NonDeletedExcalidrawElement[],
   selection: NonDeletedExcalidrawElement,
@@ -98,6 +106,13 @@ export const getElementsWithinSelection = (
   return elementsInSelection;
 };
 
+/**
+ * 获取可见且未被选中的元素。
+ * @param elements
+ * @param selectedElements
+ * @param appState
+ * @param elementsMap
+ */
 export const getVisibleAndNonSelectedElements = (
   elements: readonly NonDeletedExcalidrawElement[],
   selectedElements: readonly NonDeletedExcalidrawElement[],
@@ -121,6 +136,11 @@ export const getVisibleAndNonSelectedElements = (
 };
 
 // FIXME move this into the editor instance to keep utility methods stateless
+/**
+ * 判断是否有元素被选中（带缓存优化）。
+ * @param elements
+ * @param appState
+ */
 export const isSomeElementSelected = (function () {
   let lastElements: readonly NonDeletedExcalidrawElement[] | null = null;
   let lastSelectedElementIds: AppState["selectedElementIds"] | null = null;
@@ -159,6 +179,10 @@ export const isSomeElementSelected = (function () {
 /**
  * Returns common attribute (picked by `getAttribute` callback) of selected
  *  elements. If elements don't share the same value, returns `null`.
+ * 获取所有选中元素的共同属性值，如果不一致则返回 null。
+ * @param elements
+ * @param appState
+ * @param getAttribute
  */
 export const getCommonAttributeOfSelectedElements = <T>(
   elements: readonly NonDeletedExcalidrawElement[],
@@ -175,6 +199,12 @@ export const getCommonAttributeOfSelectedElements = <T>(
   return attributes.length === 1 ? attributes[0] : null;
 };
 
+/**
+ * 获取所有被选中的元素。
+ * @param elements
+ * @param appState
+ * @param opts
+ */
 export const getSelectedElements = (
   elements: ElementsMapOrArray,
   appState: Pick<InteractiveCanvasAppState, "selectedElementIds">,
@@ -216,6 +246,11 @@ export const getSelectedElements = (
   return selectedElements;
 };
 
+/**
+ * 获取当前操作目标元素（编辑中或选中元素）。
+ * @param elements
+ * @param appState
+ */
 export const getTargetElements = (
   elements: ElementsMapOrArray,
   appState: Pick<AppState, "selectedElementIds" | "editingElement">,
@@ -229,6 +264,9 @@ export const getTargetElements = (
 /**
  * returns prevState's selectedElementids if no change from previous, so as to
  * retain reference identity for memoization
+ * 如果选中元素未变化，则复用上一次的 selectedElementIds 引用。
+ * @param nextSelectedElementIds
+ * @param prevState
  */
 export const makeNextSelectedElementIds = (
   nextSelectedElementIds: AppState["selectedElementIds"],

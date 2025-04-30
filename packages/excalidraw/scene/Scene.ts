@@ -108,9 +108,20 @@ class Scene {
   // static methods/props
   // ---------------------------------------------------------------------------
 
+  /**
+   * 静态属性：元素到场景的映射（弱引用）。
+   */
   private static sceneMapByElement = new WeakMap<ExcalidrawElement, Scene>();
+  /**
+   * 静态属性：元素ID到场景的映射。
+   */
   private static sceneMapById = new Map<string, Scene>();
 
+  /**
+   * 将元素或元素ID映射到场景。
+   * @param elementKey 元素或元素ID
+   * @param scene 场景实例
+   */
   static mapElementToScene(elementKey: ElementKey, scene: Scene) {
     if (isIdKey(elementKey)) {
       // for cases where we don't have access to the element object
@@ -125,7 +136,10 @@ class Scene {
   }
 
   /**
-   * @deprecated pass down `app.scene` and use it directly
+   * @deprecated 传递 app.scene 并直接使用
+   * 根据元素或元素ID获取场景。
+   * @param elementKey 元素或元素ID
+   * @returns 场景实例或 null
    */
   static getScene(elementKey: ElementKey): Scene | null {
     if (isIdKey(elementKey)) {
@@ -138,19 +152,42 @@ class Scene {
   // instance methods/props
   // ---------------------------------------------------------------------------
 
+  /**
+   * 监听场景更新的回调集合。
+   */
   private callbacks: Set<SceneStateCallback> = new Set();
 
+  /**
+   * 未删除的元素数组。
+   */
   private nonDeletedElements: readonly Ordered<NonDeletedExcalidrawElement>[] =
     [];
+  /**
+   * 未删除的元素 Map。
+   */
   private nonDeletedElementsMap = toBrandedType<NonDeletedSceneElementsMap>(
     new Map(),
   );
-  // ideally all elements within the scene should be wrapped around with `Ordered` type, but right now there is no real benefit doing so
+  /**
+   * 所有元素数组。
+   */
   private elements: readonly OrderedExcalidrawElement[] = [];
+  /**
+   * 未删除的帧元素数组。
+   */
   private nonDeletedFramesLikes: readonly NonDeleted<ExcalidrawFrameLikeElement>[] =
     [];
+  /**
+   * 所有帧元素数组。
+   */
   private frames: readonly ExcalidrawFrameLikeElement[] = [];
+  /**
+   * 所有元素 Map。
+   */
   private elementsMap = toBrandedType<SceneElementsMap>(new Map());
+  /**
+   * 选中元素的缓存。
+   */
   private selectedElementsCache: {
     selectedElementIds: AppState["selectedElementIds"] | null;
     elements: readonly NonDeletedExcalidrawElement[] | null;
@@ -161,39 +198,65 @@ class Scene {
     cache: new Map(),
   };
   /**
-   * Random integer regenerated each scene update.
-   *
-   * Does not relate to elements versions, it's only a renderer
-   * cache-invalidation nonce at the moment.
+   * 随机整数，每次场景更新时重新生成。
+   * 当前仅用于渲染器缓存失效。
    */
   private sceneNonce: number | undefined;
 
+  /**
+   * 获取当前场景的随机数 nonce。
+   * @returns 随机整数
+   */
   getSceneNonce() {
     return this.sceneNonce;
   }
 
+  /**
+   * 获取未删除元素的 Map。
+   * @returns 未删除元素的 Map
+   */
   getNonDeletedElementsMap() {
     return this.nonDeletedElementsMap;
   }
 
+  /**
+   * 获取包含已删除元素的所有元素数组。
+   * @returns 所有元素数组
+   */
   getElementsIncludingDeleted() {
     return this.elements;
   }
 
+  /**
+   * 获取包含已删除元素的所有元素 Map。
+   * @returns 所有元素 Map
+   */
   getElementsMapIncludingDeleted() {
     return this.elementsMap;
   }
 
+  /**
+   * 获取未删除的所有元素数组。
+   * @returns 未删除元素数组
+   */
   getNonDeletedElements() {
     return this.nonDeletedElements;
   }
 
+  /**
+   * 获取包含已删除帧的所有帧数组。
+   * @returns 所有帧数组
+   */
   getFramesIncludingDeleted() {
     return this.frames;
   }
 
+  /**
+   * 获取选中的元素。
+   * @param opts 选项
+   * @returns 选中的未删除元素数组
+   */
   getSelectedElements(opts: {
-    // NOTE can be ommitted by making Scene constructor require App instance
     selectedElementIds: AppState["selectedElementIds"];
     /**
      * for specific cases where you need to use elements not from current
@@ -238,14 +301,28 @@ class Scene {
     return selectedElements;
   }
 
+  /**
+   * 获取未删除的帧元素数组。
+   * @returns 未删除帧元素数组
+   */
   getNonDeletedFramesLikes(): readonly NonDeleted<ExcalidrawFrameLikeElement>[] {
     return this.nonDeletedFramesLikes;
   }
 
+  /**
+   * 根据元素ID获取元素。
+   * @param id 元素ID
+   * @returns 元素或 null
+   */
   getElement<T extends ExcalidrawElement>(id: T["id"]): T | null {
     return (this.elementsMap.get(id) as T | undefined) || null;
   }
 
+  /**
+   * 根据元素ID获取未删除的元素。
+   * @param id 元素ID
+   * @returns 未删除元素或 null
+   */
   getNonDeletedElement(
     id: ExcalidrawElement["id"],
   ): NonDeleted<ExcalidrawElement> | null {
@@ -257,16 +334,9 @@ class Scene {
   }
 
   /**
-   * A utility method to help with updating all scene elements, with the added
-   * performance optimization of not renewing the array if no change is made.
-   *
-   * Maps all current excalidraw elements, invoking the callback for each
-   * element. The callback should either return a new mapped element, or the
-   * original element if no changes are made. If no changes are made to any
-   * element, this results in a no-op. Otherwise, the newly mapped elements
-   * are set as the next scene's elements.
-   *
-   * @returns whether a change was made
+   * 用于批量更新场景所有元素的工具方法。
+   * @param iteratee 映射函数
+   * @returns 是否有元素被更改
    */
   mapElements(
     iteratee: (element: ExcalidrawElement) => ExcalidrawElement,
@@ -285,6 +355,10 @@ class Scene {
     return didChange;
   }
 
+  /**
+   * 替换场景中的所有元素。
+   * @param nextElements 新的元素数组或 Map
+   */
   replaceAllElements(nextElements: ElementsMapOrArray) {
     const _nextElements =
       // ts doesn't like `Array.isArray` of `instanceof Map`
@@ -314,6 +388,9 @@ class Scene {
     this.triggerUpdate();
   }
 
+  /**
+   * 触发场景更新。
+   */
   triggerUpdate() {
     this.sceneNonce = randomInteger();
 
@@ -322,6 +399,11 @@ class Scene {
     }
   }
 
+  /**
+   * 注册场景更新回调。
+   * @param cb 回调函数
+   * @returns 移除回调的函数
+   */
   onUpdate(cb: SceneStateCallback): SceneStateCallbackRemover {
     if (this.callbacks.has(cb)) {
       throw new Error();
@@ -337,6 +419,9 @@ class Scene {
     };
   }
 
+  /**
+   * 销毁场景，清理所有数据。
+   */
   destroy() {
     this.elements = [];
     this.nonDeletedElements = [];
@@ -358,6 +443,11 @@ class Scene {
     this.callbacks.clear();
   }
 
+  /**
+   * 在指定索引插入元素。
+   * @param element 元素
+   * @param index 索引
+   */
   insertElementAtIndex(element: ExcalidrawElement, index: number) {
     if (!Number.isFinite(index) || index < 0) {
       throw new Error(
@@ -376,6 +466,11 @@ class Scene {
     this.replaceAllElements(nextElements);
   }
 
+  /**
+   * 在指定索引插入多个元素。
+   * @param elements 元素数组
+   * @param index 索引
+   */
   insertElementsAtIndex(elements: ExcalidrawElement[], index: number) {
     if (!Number.isFinite(index) || index < 0) {
       throw new Error(
@@ -394,6 +489,10 @@ class Scene {
     this.replaceAllElements(nextElements);
   }
 
+  /**
+   * 插入单个元素。
+   * @param element 元素
+   */
   insertElement = (element: ExcalidrawElement) => {
     const index = element.frameId
       ? this.getElementIndex(element.frameId)
@@ -402,6 +501,10 @@ class Scene {
     this.insertElementAtIndex(element, index);
   };
 
+  /**
+   * 插入多个元素。
+   * @param elements 元素数组
+   */
   insertElements = (elements: ExcalidrawElement[]) => {
     const index = elements[0].frameId
       ? this.getElementIndex(elements[0].frameId)
@@ -410,10 +513,20 @@ class Scene {
     this.insertElementsAtIndex(elements, index);
   };
 
+  /**
+   * 获取指定ID元素在数组中的索引。
+   * @param elementId 元素ID
+   * @returns 索引
+   */
   getElementIndex(elementId: string) {
     return this.elements.findIndex((element) => element.id === elementId);
   }
 
+  /**
+   * 获取元素的容器元素。
+   * @param element 元素
+   * @returns 容器元素或 null
+   */
   getContainerElement = (
     element:
       | (ExcalidrawElement & {

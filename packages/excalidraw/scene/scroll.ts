@@ -11,6 +11,7 @@ import {
   viewportCoordsToSceneCoords,
 } from "../utils";
 
+// 判断给定的场景坐标范围是否超出当前视口
 const isOutsideViewPort = (appState: AppState, cords: Array<number>) => {
   const [x1, y1, x2, y2] = cords;
   const { x: viewportX1, y: viewportY1 } = sceneCoordsToViewportCoords(
@@ -27,14 +28,15 @@ const isOutsideViewPort = (appState: AppState, cords: Array<number>) => {
   );
 };
 
+// 将视口滚动到指定的场景点的中心
 export const centerScrollOn = ({
   scenePoint,
   viewportDimensions,
   zoom,
 }: {
-  scenePoint: PointerCoords;
-  viewportDimensions: { height: number; width: number };
-  zoom: Zoom;
+  scenePoint: PointerCoords; // 需要居中的场景坐标点
+  viewportDimensions: { height: number; width: number }; // 视口尺寸
+  zoom: Zoom; // 缩放比例
 }) => {
   return {
     scrollX: viewportDimensions.width / 2 / zoom.value - scenePoint.x,
@@ -42,6 +44,7 @@ export const centerScrollOn = ({
   };
 };
 
+// 计算元素集合的中心点，并返回滚动到该中心点所需的 scrollX 和 scrollY
 export const calculateScrollCenter = (
   elements: readonly ExcalidrawElement[],
   appState: AppState,

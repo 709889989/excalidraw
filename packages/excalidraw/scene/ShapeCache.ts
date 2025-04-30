@@ -10,14 +10,19 @@ import type { ElementShape, ElementShapes } from "./types";
 import { COLOR_PALETTE } from "../colors";
 import type { AppState, EmbedsValidationStatus } from "../types";
 
+// ShapeCache 类用于缓存和管理 Excalidraw 元素的形状数据，避免重复生成形状，提高渲染性能。
+// 它支持获取、设置、删除和清空元素的形状缓存，并在需要时自动生成并缓存形状。
 export class ShapeCache {
+  // 形状生成器
   private static rg = new RoughGenerator();
+  // 缓存，存储元素与其形状的映射
   private static cache = new WeakMap<ExcalidrawElement, ElementShape>();
 
   /**
    * Retrieves shape from cache if available. Use this only if shape
    * is optional and you have a fallback in case it's not cached.
    */
+  // 获取元素的形状缓存
   public static get = <T extends ExcalidrawElement>(element: T) => {
     return ShapeCache.cache.get(
       element,
@@ -26,6 +31,7 @@ export class ShapeCache {
       : ElementShape | undefined;
   };
 
+  // 设置元素的形状缓存
   public static set = <T extends ExcalidrawElement>(
     element: T,
     shape: T["type"] extends keyof ElementShapes
@@ -33,9 +39,11 @@ export class ShapeCache {
       : Drawable,
   ) => ShapeCache.cache.set(element, shape);
 
+  // 删除元素的形状缓存
   public static delete = (element: ExcalidrawElement) =>
     ShapeCache.cache.delete(element);
 
+  // 清空所有缓存
   public static destroy = () => {
     ShapeCache.cache = new WeakMap();
   };
@@ -44,6 +52,7 @@ export class ShapeCache {
    * Generates & caches shape for element if not already cached, otherwise
    * returns cached shape.
    */
+  // 生成并缓存元素的形状，如果已缓存则直接返回
   public static generateElementShape = <
     T extends Exclude<ExcalidrawElement, ExcalidrawSelectionElement>,
   >(

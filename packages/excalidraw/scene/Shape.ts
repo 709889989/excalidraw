@@ -24,10 +24,13 @@ import {
 import { canChangeRoundness } from "./comparisons";
 import type { EmbedsValidationStatus } from "../types";
 
+// 获取虚线样式的 dash 数组
 const getDashArrayDashed = (strokeWidth: number) => [8, 8 + strokeWidth];
 
+// 获取点线样式的 dash 数组
 const getDashArrayDotted = (strokeWidth: number) => [1.5, 6 + strokeWidth];
 
+// 调整元素的 roughness（粗糙度）参数
 function adjustRoughness(element: ExcalidrawElement): number {
   const roughness = element.roughness;
 
@@ -51,6 +54,7 @@ function adjustRoughness(element: ExcalidrawElement): number {
   return Math.min(roughness / (maxSize < 10 ? 3 : 2), 2.5);
 }
 
+// 生成 roughjs 的绘制参数 options
 export const generateRoughOptions = (
   element: ExcalidrawElement,
   continuousPath = false,
@@ -117,6 +121,7 @@ export const generateRoughOptions = (
   }
 };
 
+// 针对 iframe/embeddable 元素在 roughjs options 上做特殊处理
 const modifyIframeLikeForRoughOptions = (
   element: NonDeletedExcalidrawElement,
   isExporting: boolean,
@@ -150,6 +155,7 @@ const modifyIframeLikeForRoughOptions = (
   return element;
 };
 
+// 获取箭头头部的 roughjs 形状
 const getArrowheadShapes = (
   element: ExcalidrawLinearElement,
   shape: Drawable[],
@@ -271,9 +277,9 @@ const getArrowheadShapes = (
 };
 
 /**
- * Generates the roughjs shape for given element.
+ * 生成指定元素的 roughjs 形状。
  *
- * Low-level. Use `ShapeCache.generateElementShape` instead.
+ * 底层方法。请使用 `ShapeCache.generateElementShape`。
  *
  * @private
  */
@@ -491,6 +497,7 @@ export const _generateElementShape = (
   }
 };
 
+// 生成折线箭头的 path 路径字符串
 const generateElbowArrowShape = (
   points: [number, number][],
   radius: number,

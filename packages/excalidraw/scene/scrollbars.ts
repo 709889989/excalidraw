@@ -9,6 +9,14 @@ export const SCROLLBAR_MARGIN = 4;
 export const SCROLLBAR_WIDTH = 6;
 export const SCROLLBAR_COLOR = "rgba(0,0,0,0.3)";
 
+/**
+ * 计算滚动条的位置和尺寸。
+ * @param elements 当前场景中的所有元素
+ * @param viewportWidth 视口宽度
+ * @param viewportHeight 视口高度
+ * @param appState 当前应用状态，包含缩放、滚动等信息
+ * @returns 返回水平和垂直滚动条的位置信息，如果不需要滚动条则为null
+ */
 export const getScrollBars = (
   elements: readonly ExcalidrawElement[],
   viewportWidth: number,
@@ -98,6 +106,13 @@ export const getScrollBars = (
   };
 };
 
+/**
+ * 判断鼠标是否悬停在滚动条上。
+ * @param scrollBars 当前滚动条的位置信息
+ * @param x 鼠标x坐标
+ * @param y 鼠标y坐标
+ * @returns 返回是否悬停在水平或垂直滚动条上
+ */
 export const isOverScrollBars = (
   scrollBars: ScrollBars,
   x: number,

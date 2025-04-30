@@ -42,6 +42,12 @@ import { Fonts } from "../fonts";
 
 const SVG_EXPORT_TAG = `<!-- svg-source:excalidraw -->`;
 
+/**
+ * 截断文本元素的内容以适应最大宽度。
+ * @param element 文本元素
+ * @param maxWidth 最大宽度
+ * @returns 截断后的文本元素
+ */
 const truncateText = (element: ExcalidrawTextElement, maxWidth: number) => {
   if (element.width <= maxWidth) {
     return element;
@@ -78,6 +84,10 @@ const truncateText = (element: ExcalidrawTextElement, maxWidth: number) => {
  * being rendered in DOM when editing. Adding the labels as regular text
  * elements seems like a simple hack. In the future we'll want to move to
  * proper canvas rendering, even within editor (instead of DOM).
+ * 在导出帧时，将帧标签作为文本元素添加。
+ * @param elements 元素数组
+ * @param opts 导出选项
+ * @returns 添加标签后的元素数组
  */
 const addFrameLabelsAsTextElements = (
   elements: readonly NonDeletedExcalidrawElement[],
@@ -110,6 +120,12 @@ const addFrameLabelsAsTextElements = (
   return nextElements;
 };
 
+/**
+ * 获取帧渲染配置。
+ * @param exportingFrame 当前导出的帧
+ * @param frameRendering 当前帧渲染配置
+ * @returns 新的帧渲染配置
+ */
 const getFrameRenderingConfig = (
   exportingFrame: ExcalidrawFrameLikeElement | null,
   frameRendering: AppState["frameRendering"] | null,
@@ -123,6 +139,11 @@ const getFrameRenderingConfig = (
   };
 };
 
+/**
+ * 为渲染准备元素。
+ * @param params 元素、帧、渲染配置等
+ * @returns 处理后的元素数组
+ */
 const prepareElementsForRender = ({
   elements,
   exportingFrame,
@@ -149,6 +170,16 @@ const prepareElementsForRender = ({
   return nextElements;
 };
 
+/**
+ * 导出为 Canvas。
+ * @param elements 元素数组
+ * @param appState 应用状态
+ * @param files 二进制文件
+ * @param options 导出选项
+ * @param createCanvas 创建 Canvas 的函数
+ * @param loadFonts 加载字体的函数
+ * @returns Promise<HTMLCanvasElement>
+ */
 export const exportToCanvas = async (
   elements: readonly NonDeletedExcalidrawElement[],
   appState: AppState,
@@ -248,6 +279,14 @@ export const exportToCanvas = async (
   return canvas;
 };
 
+/**
+ * 导出为 SVG。
+ * @param elements 元素数组
+ * @param appState 应用状态
+ * @param files 二进制文件
+ * @param opts 其他选项
+ * @returns Promise<SVGSVGElement>
+ */
 export const exportToSvg = async (
   elements: readonly NonDeletedExcalidrawElement[],
   appState: {
@@ -445,7 +484,12 @@ export const exportToSvg = async (
   return svgRoot;
 };
 
-// calculate smallest area to fit the contents in
+/**
+ * 计算适合内容的最小区域。
+ * @param elements 元素数组
+ * @param exportPadding 导出填充
+ * @returns [minX, minY, width, height]
+ */
 const getCanvasSize = (
   elements: readonly NonDeletedExcalidrawElement[],
   exportPadding: number,
@@ -457,6 +501,13 @@ const getCanvasSize = (
   return [minX, minY, width, height];
 };
 
+/**
+ * 获取导出尺寸。
+ * @param elements 元素数组
+ * @param exportPadding 导出填充
+ * @param scale 缩放比例
+ * @returns [width, height]
+ */
 export const getExportSize = (
   elements: readonly NonDeletedExcalidrawElement[],
   exportPadding: number,
