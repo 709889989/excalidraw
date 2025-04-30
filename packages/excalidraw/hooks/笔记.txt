@@ -11,4 +11,15 @@
 
 这些Hook通过封装通用逻辑，使得Excalidraw的组件开发更加高效，同时保证了良好的交互体验和性能优化。
 
+
+
+useCallbackRefState.ts：提供带回调的 ref 状态管理 Hook，便于在函数式组件中安全获取和设置 ref。
+useCreatePortalContainer.ts：用于动态创建并管理 React Portal 容器，支持自定义 className 和父容器，适合弹窗等场景。
+useEmitter.ts：监听自定义事件发射器（Emitter），并返回最新事件数据，实现组件间事件通信。
+useLibraryItemSvg.ts：负责将库元素导出为 SVG 并缓存，提升渲染效率，支持 SVG 缓存的增删清空。
+useOutsideClick.ts：检测并处理组件外部点击事件，常用于弹窗、下拉菜单等场景，支持自定义判定逻辑。
+useScrollPosition.ts：监听并返回指定元素的滚动位置，使用 jotai 管理全局滚动状态，支持节流优化。
+useStable.ts：返回生命周期内稳定引用的对象，自动合并最新属性，避免不必要的重渲染。
+useStableCallback.ts：返回稳定引用的回调函数，确保函数引用在组件生命周期内不变，适合依赖项优化。
+useTransition.ts：兼容 React 17 的 useTransition Polyfill，提供 startTransition API，保证过渡动画兼容性。
         

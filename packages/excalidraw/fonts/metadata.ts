@@ -8,29 +8,39 @@ import { FONT_FAMILY } from "../constants";
 
 /**
  * Encapsulates font metrics with additional font metadata.
+ * 字体元数据接口，包含字体度量和额外信息
  * */
 export interface FontMetadata {
   /** for head & hhea metrics read the woff2 with https://fontdrop.info/ */
+  // 字体的单位方框大小
   metrics: {
     /** head.unitsPerEm metric */
     unitsPerEm: 1000 | 1024 | 2048;
     /** hhea.ascender metric */
+    // 字体上升线
     ascender: number;
     /** hhea.descender metric */
+    // 字体下降线
     descender: number;
     /** harcoded unitless line-height, https://github.com/excalidraw/excalidraw/pull/6360#issuecomment-1477635971 */
+    // 行高（无单位）
     lineHeight: number;
   };
   /** element to be displayed as an icon  */
+  // 用作字体图标的元素
   icon: JSX.Element;
   /** flag to indicate a deprecated font */
+  // 是否为弃用字体
   deprecated?: true;
   /** flag to indicate a server-side only font */
+  // 是否为仅服务端字体
   serverSide?: true;
   /** flag to indiccate a local-only font */
+  // 是否为本地字体
   local?: true;
 }
 
+// 字体元数据映射表，key为字体编号
 export const FONT_METADATA: Record<number, FontMetadata> = {
   [FONT_FAMILY.Excalifont]: {
     metrics: {
@@ -112,6 +122,7 @@ export const FONT_METADATA: Record<number, FontMetadata> = {
 };
 
 /** Unicode ranges */
+// Unicode 字符范围
 export const RANGES = {
   LATIN:
     "U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD",
@@ -125,4 +136,5 @@ export const RANGES = {
 };
 
 /** local protocol to skip the local font from registering or inlining */
+// 本地字体协议前缀，跳过本地字体注册或内联
 export const LOCAL_FONT_PROTOCOL = "local:";

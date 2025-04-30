@@ -18,24 +18,23 @@ import {
 import { ExcalidrawFont, type Font } from "./ExcalidrawFont";
 import { getContainerElement } from "../element/textElement";
 
-import Virgil from "./assets/Virgil-Regular.woff2";
-import Excalifont from "./assets/Excalifont-Regular.woff2";
-import Cascadia from "./assets/CascadiaCode-Regular.woff2";
-import ComicShanns from "./assets/ComicShanns-Regular.woff2";
-import LiberationSans from "./assets/LiberationSans-Regular.woff2";
+import Virgil from "./assets/Virgil-Regular.woff2"; // 本地 Virgil 字体文件
+import Excalifont from "./assets/Excalifont-Regular.woff2"; // 本地 Excalifont 字体文件
+import Cascadia from "./assets/CascadiaCode-Regular.woff2"; // 本地 Cascadia 字体文件
+import ComicShanns from "./assets/ComicShanns-Regular.woff2"; // 本地 ComicShanns 字体文件
+import LiberationSans from "./assets/LiberationSans-Regular.woff2"; // 本地 LiberationSans 字体文件
 
-import LilitaLatin from "https://fonts.gstatic.com/s/lilitaone/v15/i7dPIFZ9Zz-WBtRtedDbYEF8RXi4EwQ.woff2";
-import LilitaLatinExt from "https://fonts.gstatic.com/s/lilitaone/v15/i7dPIFZ9Zz-WBtRtedDbYE98RXi4EwSsbg.woff2";
+import LilitaLatin from "https://fonts.gstatic.com/s/lilitaone/v15/i7dPIFZ9Zz-WBtRtedDbYEF8RXi4EwQ.woff2"; // Lilita One 拉丁子集远程字体
+import LilitaLatinExt from "https://fonts.gstatic.com/s/lilitaone/v15/i7dPIFZ9Zz-WBtRtedDbYE98RXi4EwSsbg.woff2"; // Lilita One 拉丁扩展子集远程字体
 
-import NunitoLatin from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTQ3j6zbXWjgeg.woff2";
-import NunitoLatinExt from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTo3j6zbXWjgevT5.woff2";
-import NunitoCyrilic from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTA3j6zbXWjgevT5.woff2";
-import NunitoCyrilicExt from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTk3j6zbXWjgevT5.woff2";
-import NunitoVietnamese from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTs3j6zbXWjgevT5.woff2";
+import NunitoLatin from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTQ3j6zbXWjgeg.woff2"; // Nunito 拉丁子集远程字体
+import NunitoLatinExt from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTo3j6zbXWjgevT5.woff2"; // Nunito 拉丁扩展子集远程字体
+import NunitoCyrilic from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTA3j6zbXWjgevT5.woff2"; // Nunito 西里尔子集远程字体
+import NunitoCyrilicExt from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTk3j6zbXWjgevT5.woff2"; // Nunito 西里尔扩展子集远程字体
+import NunitoVietnamese from "https://fonts.gstatic.com/s/nunito/v26/XRXI3I6Li01BKofiOc5wtlZ2di8HDIkhdTs3j6zbXWjgevT5.woff2"; // Nunito 越南语子集远程字体
 
 export class Fonts {
-  // it's ok to track fonts across multiple instances only once, so let's use
-  // a static member to reduce memory footprint
+  // 静态缓存，记录已加载过的字体，避免重复加载
   public static readonly loadedFontsCache = new Set<string>();
 
   private static _registered:
@@ -51,12 +50,11 @@ export class Fonts {
   private static _initialized: boolean = false;
 
   public static get registered() {
-    // lazy load the font registration
+    // 懒加载字体注册表
     if (!Fonts._registered) {
       Fonts._registered = Fonts.init();
     } else if (!Fonts._initialized) {
-      // case when host app register fonts before they are lazy loaded
-      // don't override whatever has been previously registered
+      // 如果主机应用在懒加载之前注册了字体，不覆盖之前注册的内容
       Fonts._registered = new Map([
         ...Fonts.init().entries(),
         ...Fonts._registered.entries(),
@@ -77,18 +75,13 @@ export class Fonts {
   }
 
   /**
-   * if we load a (new) font, it's likely that text elements using it have
-   * already been rendered using a fallback font. Thus, we want invalidate
-   * their shapes and rerender. See #637.
-   *
-   * Invalidates text elements and rerenders scene, provided that at least one
-   * of the supplied fontFaces has not already been processed.
+   * 如果加载了新的字体，可能文本元素已经使用了回退字体渲染。
+   * 因此需要使这些文本元素的形状失效并重新渲染。
+   * 使文本元素失效并重新渲染场景，前提是至少有一个提供的 fontFaces 尚未被处理。
    */
   public onLoaded = (fontFaces: readonly FontFace[]) => {
     if (
-      // bail if all fonts with have been processed. We're checking just a
-      // subset of the font properties (though it should be enough), so it
-      // can technically bail on a false positive.
+      // 如果所有字体都已处理，则跳过。这里只检查了字体属性的子集，因此可能会出现误判。
       fontFaces.every((fontFace) => {
         const sig = `${fontFace.family}-${fontFace.style}-${fontFace.weight}-${fontFace.unicodeRange}`;
         if (Fonts.loadedFontsCache.has(sig)) {
@@ -122,7 +115,7 @@ export class Fonts {
   };
 
   /**
-   * Load font faces for a given scene and trigger scene update.
+   * 加载当前场景用到的所有字体并触发场景更新。
    */
   public loadSceneFonts = async (): Promise<FontFace[]> => {
     const sceneFamilies = this.getSceneFontFamilies();
@@ -132,14 +125,14 @@ export class Fonts {
   };
 
   /**
-   * Gets all the font families for the given scene.
+   * 获取当前场景所有文本元素的字体家族。
    */
   public getSceneFontFamilies = () => {
     return Fonts.getFontFamilies(this.scene.getNonDeletedElements());
   };
 
   /**
-   * Load font faces for passed elements - use when the scene is unavailable (i.e. export).
+   * 加载指定元素所需的字体（用于导出等场景）。
    */
   public static loadFontsForElements = async (
     elements: readonly ExcalidrawElement[],
@@ -151,9 +144,9 @@ export class Fonts {
   private static async loadFontFaces(
     fontFamilies: Array<ExcalidrawTextElement["fontFamily"]>,
   ) {
-    // add all registered font faces into the `document.fonts` (if not added already)
+    // 将所有已注册的字体添加到 document.fonts（如果尚未添加）
     for (const { fonts, metadata } of Fonts.registered.values()) {
-      // skip registering font faces for local fonts (i.e. Helvetica)
+      // 跳过本地字体的注册（如 Helvetica）
       if (metadata.local) {
         continue;
       }
@@ -172,14 +165,13 @@ export class Fonts {
           fontSize: 16,
         });
 
-        // WARN: without "text" param it does not have to mean that all font faces are loaded, instead it could be just one!
+        // 警告：没有 "text" 参数并不意味着所有字体都已加载，可能只有一个被加载！
         if (!window.document.fonts.check(fontString)) {
           try {
-            // WARN: browser prioritizes loading only font faces with unicode ranges for characters which are present in the document (html & canvas), other font faces could stay unloaded
-            // we might want to retry here, i.e.  in case CDN is down, but so far I didn't experience any issues - maybe it handles retry-like logic under the hood
+            // 警告：浏览器优先加载文档中存在字符的字体子集，其他字体子集可能未加载
             return await window.document.fonts.load(fontString);
           } catch (e) {
-            // don't let it all fail if just one font fails to load
+            // 如果某个字体加载失败，不影响其他字体加载
             console.error(
               `Failed to load font "${fontString}" from urls "${Fonts.registered
                 .get(fontFamily)
@@ -197,9 +189,10 @@ export class Fonts {
   }
 
   /**
-   * WARN: should be called just once on init, even across multiple instances.
+   * 警告：此方法应仅在初始化时调用一次，即使跨多个实例。
    */
   private static init() {
+    // 初始化字体注册表
     const fonts = {
       registered: new Map<
         ValueOf<typeof FONT_FAMILY>,
@@ -207,7 +200,7 @@ export class Fonts {
       >(),
     };
 
-    // TODO: let's tweak this once we know how `register` will be exposed as part of the custom fonts API
+    // TODO: 根据自定义字体 API 的暴露方式调整此处逻辑
     const _register = register.bind(fonts);
 
     _register("Virgil", FONT_METADATA[FONT_FAMILY.Virgil], {
@@ -218,12 +211,12 @@ export class Fonts {
       uri: Excalifont,
     });
 
-    // keeping for backwards compatibility reasons, uses system font (Helvetica on MacOS, Arial on Win)
+    // 为了向后兼容，使用系统字体（MacOS 上为 Helvetica，Win 上为 Arial）
     _register("Helvetica", FONT_METADATA[FONT_FAMILY.Helvetica], {
       uri: LOCAL_FONT_PROTOCOL,
     });
 
-    // used for server-side pdf & png export instead of helvetica (technically does not need metrics, but kept in for consistency)
+    // 用于服务器端 PDF 和 PNG 导出代替 Helvetica
     _register(
       "Liberation Sans",
       FONT_METADATA[FONT_FAMILY["Liberation Sans"]],
@@ -280,6 +273,7 @@ export class Fonts {
   private static getFontFamilies(
     elements: ReadonlyArray<ExcalidrawElement>,
   ): Array<ExcalidrawTextElement["fontFamily"]> {
+    // 提取所有文本元素的字体家族集合
     return Array.from(
       elements.reduce((families, element) => {
         if (isTextElement(element)) {
@@ -292,11 +286,11 @@ export class Fonts {
 }
 
 /**
- * Register a new font.
+ * 注册新字体。
  *
- * @param family font family
- * @param metadata font metadata
- * @param params array of the rest of the FontFace parameters [uri: string, descriptors: FontFaceDescriptors?] ,
+ * @param family 字体家族
+ * @param metadata 字体元数据
+ * @param params 字体参数数组 [uri: string, descriptors: FontFaceDescriptors?]
  */
 function register(
   this:
@@ -311,7 +305,7 @@ function register(
   metadata: FontMetadata,
   ...params: Array<{ uri: string; descriptors?: FontFaceDescriptors }>
 ) {
-  // TODO: likely we will need to abandon number "id" in order to support custom fonts
+  // TODO: 为支持自定义字体可能需要放弃数字 "id"
   const familyId = FONT_FAMILY[family as keyof typeof FONT_FAMILY];
   const registeredFamily = this.registered.get(familyId);
 
@@ -328,7 +322,7 @@ function register(
 }
 
 /**
- * Calculates vertical offset for a text with alphabetic baseline.
+ * 计算文本的垂直偏移量（基于字母基线）。
  */
 export const getVerticalOffset = (
   fontFamily: ExcalidrawTextElement["fontFamily"],
@@ -348,7 +342,7 @@ export const getVerticalOffset = (
 };
 
 /**
- * Gets line height forr a selected family.
+ * 获取选定字体家族的行高。
  */
 export const getLineHeight = (fontFamily: FontFamilyValues) => {
   const { lineHeight } =

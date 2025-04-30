@@ -6,6 +6,7 @@ export interface Font {
   fontFace: FontFace;
   getContent(): Promise<string>;
 }
+// UNPKG 生产环境的字体资源地址
 export const UNPKG_PROD_URL = `https://unpkg.com/${
   import.meta.env.VITE_PKG_NAME
     ? `${import.meta.env.VITE_PKG_NAME}@${import.meta.env.PKG_VERSION}` // should be provided by vite during package build
@@ -17,12 +18,15 @@ export class ExcalidrawFont implements Font {
   public readonly fontFace: FontFace;
 
   constructor(family: string, uri: string, descriptors?: FontFaceDescriptors) {
+    // 生成字体资源的 URL 列表
     this.urls = ExcalidrawFont.createUrls(uri);
 
+    // 构建 font-face 的 sources 字符串
     const sources = this.urls
       .map((url) => `url(${url}) ${ExcalidrawFont.getFormat(url)}`)
       .join(", ");
 
+    // 创建 FontFace 实例
     this.fontFace = new FontFace(family, sources, {
       display: "swap",
       style: "normal",
@@ -45,11 +49,12 @@ export class ExcalidrawFont implements Font {
       const url = this.urls[i];
 
       if (url.protocol === "data:") {
-        // it's dataurl, the font is inlined as base64, no need to fetch
+        // 如果是 dataurl，字体已内联为 base64，无需再请求
         return url.toString();
       }
 
       try {
+        // 请求字体资源
         const response = await fetch(url, {
           headers: {
             Accept: "font/woff2",
@@ -57,9 +62,12 @@ export class ExcalidrawFont implements Font {
         });
 
         if (response.ok) {
+          // 获取字体的 mime 类型
           const mimeType = await response.headers.get("Content-Type");
+          // 获取字体的二进制内容
           const buffer = await response.arrayBuffer();
 
+          // 转为 base64 并返回 dataurl
           return `data:${mimeType};base64,${await stringToBase64(
             await toByteString(buffer),
             true,
@@ -71,12 +79,14 @@ export class ExcalidrawFont implements Font {
           `"${url.toString()}" returned status "${response.status}"`,
         );
       } catch (e) {
+        // 捕获请求异常
         errorMessages.push(`"${url.toString()}" returned error "${e}"`);
       }
 
       i++;
     }
 
+    // 打印所有错误信息
     console.error(
       `Failed to fetch font "${
         this.fontFace.family
@@ -91,26 +101,28 @@ export class ExcalidrawFont implements Font {
 
   private static createUrls(uri: string): URL[] {
     if (uri.startsWith(LOCAL_FONT_PROTOCOL)) {
-      // no url for local fonts
+      // 本地字体协议，不生成 url
       return [];
     }
 
     if (uri.startsWith("http") || uri.startsWith("data")) {
-      // one url for http imports or data url
+      // http 导入或 data url，直接生成一个 url
       return [new URL(uri)];
     }
 
-    // absolute assets paths, which are found in tests and excalidraw-app build, won't work with base url, so we are stripping initial slash away
+    // 绝对路径资源，去掉开头的斜杠
     const assetUrl: string = uri.replace(/^\/+/, "");
     const urls: URL[] = [];
 
     if (typeof window.EXCALIDRAW_ASSET_PATH === "string") {
+      // 处理单个资源路径
       const normalizedBaseUrl = this.normalizeBaseUrl(
         window.EXCALIDRAW_ASSET_PATH,
       );
 
       urls.push(new URL(assetUrl, normalizedBaseUrl));
     } else if (Array.isArray(window.EXCALIDRAW_ASSET_PATH)) {
+      // 处理多个资源路径
       window.EXCALIDRAW_ASSET_PATH.forEach((path) => {
         const normalizedBaseUrl = this.normalizeBaseUrl(path);
         urls.push(new URL(assetUrl, normalizedBaseUrl));
@@ -125,6 +137,7 @@ export class ExcalidrawFont implements Font {
 
   private static getFormat(url: URL) {
     try {
+      // 获取文件扩展名
       const pathname = new URL(url).pathname;
       const parts = pathname.split(".");
 
@@ -141,9 +154,7 @@ export class ExcalidrawFont implements Font {
   private static normalizeBaseUrl(baseUrl: string) {
     let result = baseUrl;
 
-    // in case user passed a root-relative url (~absolute path),
-    // like "/" or "/some/path", or relative (starts with "./"),
-    // prepend it with `location.origin`
+    // 如果是根路径或相对路径，拼接 location.origin
     if (/^\.?\//.test(result)) {
       result = new URL(
         result.replace(/^\.?\/+/, ""),
@@ -151,7 +162,7 @@ export class ExcalidrawFont implements Font {
       ).toString();
     }
 
-    // ensure there is a trailing slash, otherwise url won't be correctly concatenated
+    // 保证结尾有斜杠
     result = `${result.replace(/\/+$/, "")}/`;
 
     return result;

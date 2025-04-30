@@ -23,13 +23,16 @@ export function useOutsideClick<T extends HTMLElement>(
   ) => boolean | undefined,
 ) {
   useEffect(() => {
+    // 新增中文注释：定义处理外部点击的函数
     function onOutsideClick(event: Event) {
       const _event = event as Event & { target: T };
 
+      // 新增中文注释：如果 ref 没有指向任何元素，直接返回
       if (!ref.current) {
         return;
       }
 
+      // 新增中文注释：判断点击是否被 isInside 回调覆盖
       const isInsideOverride = isInside?.(_event, ref.current);
 
       if (isInsideOverride === true) {
@@ -38,7 +41,7 @@ export function useOutsideClick<T extends HTMLElement>(
         return callback(_event);
       }
 
-      // clicked element is in the descenendant of the target container
+      // 新增中文注释：判断点击是否发生在容器内部或目标已被移除
       if (
         ref.current.contains(_event.target) ||
         // target is detached from DOM (happens when the element is removed
@@ -49,6 +52,7 @@ export function useOutsideClick<T extends HTMLElement>(
         return;
       }
 
+      // 新增中文注释：判断是否点击在 Radix Portal 上
       const isClickOnRadixPortal =
         _event.target.closest("[data-radix-portal]") ||
         // when radix popup is in "modal" mode, it disables pointer events on
@@ -66,19 +70,21 @@ export function useOutsideClick<T extends HTMLElement>(
         return;
       }
 
-      // clicking on a container that ignores outside clicks
+      // 新增中文注释：判断是否点击在忽略外部点击的容器上
       if (_event.target.closest("[data-prevent-outside-click]")) {
         return;
       }
 
+      // 新增中文注释：执行外部点击回调
       callback(_event);
     }
 
-    // note: don't use `click` because it often reports incorrect `event.target`
+    // 新增中文注释：监听 pointerdown 和 touchstart 事件
     document.addEventListener(EVENT.POINTER_DOWN, onOutsideClick);
     document.addEventListener(EVENT.TOUCH_START, onOutsideClick);
 
     return () => {
+      // 新增中文注释：移除事件监听
       document.removeEventListener(EVENT.POINTER_DOWN, onOutsideClick);
       document.removeEventListener(EVENT.TOUCH_START, onOutsideClick);
     };
