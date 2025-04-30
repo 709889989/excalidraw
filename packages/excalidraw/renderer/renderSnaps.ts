@@ -7,6 +7,9 @@ const SNAP_COLOR_DARK = "#ff0000";
 const SNAP_WIDTH = 1;
 const SNAP_CROSS_SIZE = 2;
 
+/**
+ * 渲染吸附线和吸附点
+ */
 export const renderSnaps = (
   context: CanvasRenderingContext2D,
   appState: InteractiveCanvasAppState,
@@ -57,6 +60,9 @@ export const renderSnaps = (
   context.restore();
 };
 
+/**
+ * 绘制点吸附线
+ */
 const drawPointsSnapLine = (
   pointSnapLine: PointSnapLine,
   context: CanvasRenderingContext2D,
@@ -74,6 +80,9 @@ const drawPointsSnapLine = (
   }
 };
 
+/**
+ * 绘制指针吸附线
+ */
 const drawPointerSnapLine = (
   pointerSnapLine: PointerSnapLine,
   context: CanvasRenderingContext2D,
@@ -85,6 +94,9 @@ const drawPointerSnapLine = (
   }
 };
 
+/**
+ * 绘制十字交叉点
+ */
 const drawCross = (
   [x, y]: Point,
   appState: InteractiveCanvasAppState,
@@ -106,6 +118,9 @@ const drawCross = (
   context.restore();
 };
 
+/**
+ * 绘制直线
+ */
 const drawLine = (
   from: Point,
   to: Point,
@@ -117,6 +132,9 @@ const drawLine = (
   context.stroke();
 };
 
+/**
+ * 绘制间隙吸附线
+ */
 const drawGapLine = (
   from: Point,
   to: Point,

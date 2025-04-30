@@ -69,6 +69,7 @@ export const IMAGE_INVERT_FILTER =
 
 const defaultAppState = getDefaultAppState();
 
+// 判断图片元素是否处于待加载状态
 const isPendingImageElement = (
   element: ExcalidrawElement,
   renderConfig: StaticCanvasRenderConfig,
@@ -76,6 +77,7 @@ const isPendingImageElement = (
   isInitializedImageElement(element) &&
   !renderConfig.imageCache.has(element.fileId);
 
+// 判断是否需要重置图片滤镜（主要用于暗色主题下图片显示）
 const shouldResetImageFilter = (
   element: ExcalidrawElement,
   renderConfig: StaticCanvasRenderConfig,
@@ -89,6 +91,7 @@ const shouldResetImageFilter = (
   );
 };
 
+// 获取元素在 canvas 上的 padding（内边距）
 const getCanvasPadding = (element: ExcalidrawElement) => {
   switch (element.type) {
     case "freedraw":
@@ -100,6 +103,7 @@ const getCanvasPadding = (element: ExcalidrawElement) => {
   }
 };
 
+// 计算元素的渲染透明度，考虑了父容器（如 frame）和擦除状态
 export const getRenderOpacity = (
   element: ExcalidrawElement,
   containingFrame: ExcalidrawFrameLikeElement | null,
@@ -121,6 +125,7 @@ export const getRenderOpacity = (
   return opacity;
 };
 
+// ExcalidrawElementWithCanvas 接口，描述带有 canvas 的元素及其相关属性
 export interface ExcalidrawElementWithCanvas {
   element: ExcalidrawElement | ExcalidrawTextElement;
   canvas: HTMLCanvasElement;
@@ -135,6 +140,7 @@ export interface ExcalidrawElementWithCanvas {
   boundTextCanvas: HTMLCanvasElement;
 }
 
+// 计算元素 canvas 的最大尺寸，防止超出浏览器限制
 const cappedElementCanvasSize = (
   element: NonDeletedExcalidrawElement,
   elementsMap: ElementsMap,
@@ -190,6 +196,7 @@ const cappedElementCanvasSize = (
   return { width, height, scale };
 };
 
+// 生成元素的 canvas，并在其上绘制元素
 const generateElementCanvas = (
   element: NonDeletedExcalidrawElement,
   elementsMap: NonDeletedSceneElementsMap,
@@ -339,6 +346,7 @@ IMAGE_ERROR_PLACEHOLDER_IMG.src = `data:${MIME_TYPES.svg},${encodeURIComponent(
   `<svg viewBox="0 0 668 668" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2"><path d="M464 448H48c-26.51 0-48-21.49-48-48V112c0-26.51 21.49-48 48-48h416c26.51 0 48 21.49 48 48v288c0 26.51-21.49 48-48 48ZM112 120c-30.928 0-56 25.072-56 56s25.072 56 56 56 56-25.072 56-56-25.072-56-56-56ZM64 384h384V272l-87.515-87.515c-4.686-4.686-12.284-4.686-16.971 0L208 320l-55.515-55.515c-4.686-4.686-12.284-4.686-16.971 0L64 336v48Z" style="fill:#888;fill-rule:nonzero" transform="matrix(.81709 0 0 .81709 124.825 145.825)"/><path d="M256 8C119.034 8 8 119.033 8 256c0 136.967 111.034 248 248 248s248-111.034 248-248S392.967 8 256 8Zm130.108 117.892c65.448 65.448 70 165.481 20.677 235.637L150.47 105.216c70.204-49.356 170.226-44.735 235.638 20.676ZM125.892 386.108c-65.448-65.448-70-165.481-20.677-235.637L361.53 406.784c-70.203 49.356-170.226 44.736-235.638-20.676Z" style="fill:#888;fill-rule:nonzero" transform="matrix(.30366 0 0 .30366 506.822 60.065)"/></svg>`,
 )}`;
 
+// 绘制图片占位符（未加载或加载出错时显示）
 const drawImagePlaceholder = (
   element: ExcalidrawImageElement,
   context: CanvasRenderingContext2D,
@@ -364,6 +372,7 @@ const drawImagePlaceholder = (
   );
 };
 
+// 在 canvas 上绘制单个元素
 const drawElementOnCanvas = (
   element: NonDeletedExcalidrawElement,
   rc: RoughCanvas,
@@ -492,11 +501,13 @@ const drawElementOnCanvas = (
   }
 };
 
+// 元素与 canvas 的缓存，提升渲染性能
 export const elementWithCanvasCache = new WeakMap<
   ExcalidrawElement,
   ExcalidrawElementWithCanvas
 >();
 
+// 生成带有 canvas 的元素（带缓存）
 const generateElementWithCanvas = (
   element: NonDeletedExcalidrawElement,
   elementsMap: NonDeletedSceneElementsMap,
@@ -544,6 +555,7 @@ const generateElementWithCanvas = (
   return prevElementWithCanvas;
 };
 
+// 从缓存的 canvas 绘制元素到主 canvas
 const drawElementFromCanvas = (
   elementWithCanvas: ExcalidrawElementWithCanvas,
   context: CanvasRenderingContext2D,
@@ -635,6 +647,7 @@ const drawElementFromCanvas = (
   // Clear the nested element we appended to the DOM
 };
 
+// 渲染选中元素的高亮边框
 export const renderSelectionElement = (
   element: NonDeletedExcalidrawElement,
   context: CanvasRenderingContext2D,
@@ -659,6 +672,7 @@ export const renderSelectionElement = (
   context.restore();
 };
 
+// 渲染单个元素的主入口
 export const renderElement = (
   element: NonDeletedExcalidrawElement,
   elementsMap: RenderableElementsMap,
@@ -921,8 +935,10 @@ export const renderElement = (
   context.globalAlpha = 1;
 };
 
+// 自由绘制元素的路径缓存
 export const pathsCache = new WeakMap<ExcalidrawFreeDrawElement, Path2D>([]);
 
+// 生成自由绘制元素的 Path2D 路径
 export function generateFreeDrawShape(element: ExcalidrawFreeDrawElement) {
   const svgPathData = getFreeDrawSvgPath(element);
   const path = new Path2D(svgPathData);
@@ -930,10 +946,12 @@ export function generateFreeDrawShape(element: ExcalidrawFreeDrawElement) {
   return path;
 }
 
+// 获取自由绘制元素的 Path2D 路径
 export function getFreeDrawPath2D(element: ExcalidrawFreeDrawElement) {
   return pathsCache.get(element);
 }
 
+// 获取自由绘制元素的 SVG 路径字符串
 export function getFreeDrawSvgPath(element: ExcalidrawFreeDrawElement) {
   // If input points are empty (should they ever be?) return a dot
   const inputPoints = element.simulatePressure
@@ -956,6 +974,7 @@ export function getFreeDrawSvgPath(element: ExcalidrawFreeDrawElement) {
   return getSvgPathFromStroke(getStroke(inputPoints as number[][], options));
 }
 
+// 计算两点的中点
 function med(A: number[], B: number[]) {
   return [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2];
 }
@@ -963,6 +982,7 @@ function med(A: number[], B: number[]) {
 // Trim SVG path data so number are each two decimal points. This
 // improves SVG exports, and prevents rendering errors on points
 // with long decimals.
+// 将点数组转换为 SVG 路径字符串，并限制小数精度
 const TO_FIXED_PRECISION = /(\s?[A-Z]?,?-?[0-9]*\.[0-9]{0,2})(([0-9]|e|-)*)/g;
 
 function getSvgPathFromStroke(points: number[][]): string {

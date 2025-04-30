@@ -38,6 +38,12 @@ import { getFontFamilyString, isRTL, isTestEnv } from "../utils";
 import { getFreeDrawSvgPath, IMAGE_INVERT_FILTER } from "./renderElement";
 import { getVerticalOffset } from "../fonts";
 
+/**
+ * 以指定精度绘制 roughSVG 图形。
+ * @param rsvg RoughSVG 实例
+ * @param drawable 可绘制对象
+ * @param precision 可选，精度
+ */
 const roughSVGDrawWithPrecision = (
   rsvg: RoughSVG,
   drawable: Drawable,
@@ -54,6 +60,15 @@ const roughSVGDrawWithPrecision = (
   return rsvg.draw(pshape);
 };
 
+/**
+ * 如有需要，将节点包裹在 frame 的裁剪路径中。
+ * @param element 元素对象
+ * @param root SVG 根节点
+ * @param nodes 需要包裹的节点数组
+ * @param frameRendering frame 渲染配置
+ * @param elementsMap 元素映射表
+ * @returns 包裹后的 g 节点或 null
+ */
 const maybeWrapNodesInFrameClipPath = (
   element: NonDeletedExcalidrawElement,
   root: SVGElement,
@@ -75,6 +90,17 @@ const maybeWrapNodesInFrameClipPath = (
   return null;
 };
 
+/**
+ * 将 Excalidraw 元素渲染为 SVG 节点。
+ * @param element 需要渲染的元素
+ * @param elementsMap 元素映射表
+ * @param rsvg RoughSVG 实例
+ * @param svgRoot SVG 根节点
+ * @param files 二进制文件映射
+ * @param offsetX X 方向偏移
+ * @param offsetY Y 方向偏移
+ * @param renderConfig SVG 渲染配置
+ */
 const renderElementToSvg = (
   element: NonDeletedExcalidrawElement,
   elementsMap: RenderableElementsMap,
@@ -601,6 +627,21 @@ const renderElementToSvg = (
   }
 };
 
+/**
+ * 将场景渲染为 SVG。
+ *
+ * @param elements - 场景中的所有元素，类型为只读的非删除 Excalidraw 元素数组。
+ * @param elementsMap - 可渲染元素的映射表，用于快速查找元素。
+ * @param rsvg - Rough.js 的 SVG 渲染实例，用于绘制粗略风格的图形。
+ * @param svgRoot - SVG 根元素，渲染的目标容器。
+ * @param files - 二进制文件的映射表，用于处理嵌入的文件。
+ * @param renderConfig - 渲染配置，包括偏移量和其他渲染选项。
+ *
+ * @remarks
+ * 该方法会过滤掉 iframe 类元素，并优先渲染普通元素和绑定的文本元素。
+ * iframe 类元素会在普通元素渲染完成后单独渲染。
+ * 如果渲染过程中发生错误，会捕获并在控制台输出错误信息。
+ */
 export const renderSceneToSvg = (
   elements: readonly NonDeletedExcalidrawElement[],
   elementsMap: RenderableElementsMap,

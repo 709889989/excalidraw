@@ -4,6 +4,7 @@ import type { StaticCanvasRenderConfig } from "../scene/types";
 
 import { THEME, THEME_FILTER } from "../constants";
 
+// 用于在画布上绘制一个填充的圆形
 export const fillCircle = (
   context: CanvasRenderingContext2D,
   cx: number,
@@ -19,14 +20,16 @@ export const fillCircle = (
   }
 };
 
+// 获取规范化后的画布宽高
 export const getNormalizedCanvasDimensions = (
   canvas: HTMLCanvasElement,
   scale: number,
 ): [number, number] => {
-  // When doing calculations based on canvas width we should used normalized one
+  // 基于画布宽度进行计算时，应该使用规范化后的宽度
   return [canvas.width / scale, canvas.height / scale];
 };
 
+// 初始化画布并设置相关属性
 export const bootstrapCanvas = ({
   canvas,
   scale,
@@ -46,14 +49,16 @@ export const bootstrapCanvas = ({
 }): CanvasRenderingContext2D => {
   const context = canvas.getContext("2d")!;
 
+  // 重置画布的变换矩阵
   context.setTransform(1, 0, 0, 1, 0, 0);
   context.scale(scale, scale);
 
+  // 如果是导出模式且主题为暗色模式，设置滤镜
   if (isExporting && theme === THEME.DARK) {
     context.filter = THEME_FILTER;
   }
 
-  // Paint background
+  // 绘制背景
   if (typeof viewBackgroundColor === "string") {
     const hasTransparence =
       viewBackgroundColor === "transparent" ||

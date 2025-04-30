@@ -71,6 +71,7 @@ import type {
 } from "../scene/types";
 import { getCornerRadius } from "../math";
 
+// 为线性元素的特定点添加高亮
 const renderLinearElementPointHighlight = (
   context: CanvasRenderingContext2D,
   appState: InteractiveCanvasAppState,
@@ -101,6 +102,7 @@ const renderLinearElementPointHighlight = (
   context.restore();
 };
 
+// 在画布上高亮显示特定点
 const highlightPoint = (
   point: Point,
   context: CanvasRenderingContext2D,
@@ -117,6 +119,7 @@ const highlightPoint = (
   );
 };
 
+// 绘制带有旋转和可选圆角的矩形
 const strokeRectWithRotation = (
   context: CanvasRenderingContext2D,
   x: number,
@@ -147,6 +150,7 @@ const strokeRectWithRotation = (
   context.restore();
 };
 
+// 绘制带有旋转的菱形
 const strokeDiamondWithRotation = (
   context: CanvasRenderingContext2D,
   width: number,
@@ -168,6 +172,7 @@ const strokeDiamondWithRotation = (
   context.restore();
 };
 
+// 渲染线性元素中的单个点
 const renderSingleLinearPoint = (
   context: CanvasRenderingContext2D,
   appState: InteractiveCanvasAppState,
@@ -194,6 +199,7 @@ const renderSingleLinearPoint = (
   );
 };
 
+// 绘制带有旋转的椭圆
 const strokeEllipseWithRotation = (
   context: CanvasRenderingContext2D,
   width: number,
@@ -207,6 +213,7 @@ const strokeEllipseWithRotation = (
   context.stroke();
 };
 
+// 为可绑定元素渲染绑定高亮
 const renderBindingHighlightForBindableElement = (
   context: CanvasRenderingContext2D,
   element: ExcalidrawBindableElement,
@@ -275,6 +282,7 @@ const renderBindingHighlightForBindableElement = (
   }
 };
 
+// 为建议的点绑定渲染高亮
 const renderBindingHighlightForSuggestedPointBinding = (
   context: CanvasRenderingContext2D,
   suggestedBinding: SuggestedPointBinding,
@@ -303,6 +311,7 @@ const renderBindingHighlightForSuggestedPointBinding = (
   });
 };
 
+// 渲染元素的选中边框
 const renderSelectionBorder = (
   context: CanvasRenderingContext2D,
   appState: InteractiveCanvasAppState,
@@ -368,6 +377,7 @@ const renderSelectionBorder = (
   context.restore();
 };
 
+// 在画布上高亮显示绑定
 const renderBindingHighlight = (
   context: CanvasRenderingContext2D,
   appState: InteractiveCanvasAppState,
@@ -385,6 +395,7 @@ const renderBindingHighlight = (
   context.restore();
 };
 
+// 在画布上高亮显示框架元素
 const renderFrameHighlight = (
   context: CanvasRenderingContext2D,
   appState: InteractiveCanvasAppState,
@@ -415,6 +426,7 @@ const renderFrameHighlight = (
   context.restore();
 };
 
+// 在画布上高亮显示一组元素
 const renderElementsBoxHighlight = (
   context: CanvasRenderingContext2D,
   appState: InteractiveCanvasAppState,
@@ -462,6 +474,7 @@ const renderElementsBoxHighlight = (
     );
 };
 
+// 渲染线性元素中线性点的控制柄
 const renderLinearPointHandles = (
   context: CanvasRenderingContext2D,
   appState: InteractiveCanvasAppState,
@@ -547,6 +560,7 @@ const renderLinearPointHandles = (
   context.restore();
 };
 
+// 渲染元素的变换控制柄
 const renderTransformHandles = (
   context: CanvasRenderingContext2D,
   renderConfig: InteractiveCanvasRenderConfig,
@@ -590,6 +604,7 @@ const renderTransformHandles = (
   });
 };
 
+// 渲染带有选中边框的文本框
 const renderTextBox = (
   text: NonDeleted<ExcalidrawTextElement>,
   context: CanvasRenderingContext2D,
@@ -612,6 +627,7 @@ const renderTextBox = (
   context.restore();
 };
 
+// 渲染交互场景的核心函数
 const _renderInteractiveScene = ({
   canvas,
   elementsMap,
@@ -997,6 +1013,7 @@ const _renderInteractiveScene = ({
 };
 
 /** throttled to animation framerate */
+// 交互场景渲染器的节流版本
 export const renderInteractiveSceneThrottled = throttleRAF(
   (config: InteractiveSceneRenderConfig) => {
     const ret = _renderInteractiveScene(config);
@@ -1009,6 +1026,7 @@ export const renderInteractiveSceneThrottled = throttleRAF(
  * Interactive scene is the ui-canvas where we render bounding boxes, selections
  * and other ui stuff.
  */
+// 渲染交互场景的主函数，可选节流
 export const renderInteractiveScene = <
   U extends typeof _renderInteractiveScene,
   T extends boolean = false,

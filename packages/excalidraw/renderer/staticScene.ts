@@ -31,6 +31,16 @@ import { bootstrapCanvas, getNormalizedCanvasDimensions } from "./helpers";
 import { throttleRAF } from "../utils";
 import { getBoundTextElement } from "../element/textElement";
 
+/**
+ * 绘制网格线。
+ * @param context Canvas 渲染上下文
+ * @param gridSize 网格大小
+ * @param scrollX 横向滚动偏移
+ * @param scrollY 纵向滚动偏移
+ * @param zoom 缩放对象
+ * @param width 画布宽度
+ * @param height 画布高度
+ */
 const strokeGrid = (
   context: CanvasRenderingContext2D,
   gridSize: number,
@@ -83,6 +93,13 @@ const strokeGrid = (
   context.restore();
 };
 
+/**
+ * 为指定的 frame 元素设置裁剪区域。
+ * @param frame 框架元素
+ * @param context Canvas 渲染上下文
+ * @param renderConfig 渲染配置
+ * @param appState 应用状态
+ */
 const frameClip = (
   frame: ExcalidrawFrameLikeElement,
   context: CanvasRenderingContext2D,
@@ -110,6 +127,14 @@ const frameClip = (
 };
 
 let linkCanvasCache: any;
+
+/**
+ * 在元素上渲染超链接图标。
+ * @param element 元素对象
+ * @param context Canvas 渲染上下文
+ * @param appState 应用状态
+ * @param elementsMap 元素映射表
+ */
 const renderLinkIcon = (
   element: NonDeletedExcalidrawElement,
   context: CanvasRenderingContext2D,
@@ -164,6 +189,11 @@ const renderLinkIcon = (
     context.restore();
   }
 };
+
+/**
+ * 渲染静态场景（核心渲染函数）。
+ * @param config 静态场景渲染配置
+ */
 const _renderStaticScene = ({
   canvas,
   rc,
@@ -372,7 +402,10 @@ const _renderStaticScene = ({
     });
 };
 
-/** throttled to animation framerate */
+/**
+ * 节流后的静态场景渲染方法。
+ * @param config 静态场景渲染配置
+ */
 export const renderStaticSceneThrottled = throttleRAF(
   (config: StaticSceneRenderConfig) => {
     _renderStaticScene(config);
@@ -381,7 +414,9 @@ export const renderStaticSceneThrottled = throttleRAF(
 );
 
 /**
- * Static scene is the non-ui canvas where we render elements.
+ * 渲染静态场景（非 UI 画布）。
+ * @param renderConfig 静态场景渲染配置
+ * @param throttle 是否节流
  */
 export const renderStaticScene = (
   renderConfig: StaticSceneRenderConfig,

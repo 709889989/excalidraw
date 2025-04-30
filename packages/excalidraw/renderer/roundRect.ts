@@ -7,6 +7,18 @@
  * @param {Number} width The width of the rectangle
  * @param {Number} height The height of the rectangle
  * @param {Number} radius The corner radius
+ * @param {String} strokeColor Optional, the stroke color
+ */
+/**
+ * 中文说明：
+ * 使用当前 canvas 状态绘制圆角矩形。
+ * @param context Canvas 渲染上下文
+ * @param x 左上角 x 坐标
+ * @param y 左上角 y 坐标
+ * @param width 矩形宽度
+ * @param height 矩形高度
+ * @param radius 圆角半径
+ * @param strokeColor 可选，描边颜色
  */
 export const roundRect = (
   context: CanvasRenderingContext2D,
